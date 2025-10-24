@@ -24,18 +24,10 @@ var GameInterface = {
 
     window.GameInterface.gameStart(level)
       .then(function (result) {
-        SendMessage(
-          "GameInterface",
-          "ResolveRequest",
-          JSON.stringify({ taskId, success: true })
-        );
+        SendMessage("GameInterface", "ResolveRequest", JSON.stringify({ taskId, success: true }));
       })
       .catch(function (error) {
-        SendMessage(
-          "GameInterface",
-          "ResolveRequest",
-          JSON.stringify({ taskId, success: false })
-        );
+        SendMessage("GameInterface", "ResolveRequest", JSON.stringify({ taskId, success: false }));
       });
   },
 
@@ -49,111 +41,67 @@ var GameInterface = {
 
   GameComplete: function (taskId) {
     window.GameInterface.gameComplete().then(function (result) {
-      SendMessage(
-        "GameInterface",
-        "ResolveRequest",
-        JSON.stringify({ taskId, success: true })
-      );
+      SendMessage("GameInterface", "ResolveRequest", JSON.stringify({ taskId, success: true }));
     });
   },
 
   GameOver: function (taskId) {
     window.GameInterface.gameOver().then(function (result) {
-      SendMessage(
-        "GameInterface",
-        "ResolveRequest",
-        JSON.stringify({ taskId, success: true })
-      );
+      SendMessage("GameInterface", "ResolveRequest", JSON.stringify({ taskId, success: true }));
     });
   },
 
   GameQuit: function (taskId) {
     window.GameInterface.gameQuit().then(function (result) {
-      SendMessage(
-        "GameInterface",
-        "ResolveRequest",
-        JSON.stringify({ taskId, success: true })
-      );
+      SendMessage("GameInterface", "ResolveRequest", JSON.stringify({ taskId, success: true }));
     });
   },
 
   OnGoToHome: function () {
     window.GameInterface.onGoToHome(function (result) {
-      SendMessage(
-        "GameInterface",
-        "ResolveAction",
-        JSON.stringify({ type: "OnGoToHome" })
-      );
+      SendMessage("GameInterface", "ResolveAction", JSON.stringify({ type: "OnGoToHome" }));
     });
   },
 
   OnGoToNextLevel: function () {
     window.GameInterface.onGoToNextLevel(function (result) {
-      SendMessage(
-        "GameInterface",
-        "ResolveAction",
-        JSON.stringify({ type: "OnGoToNextLevel" })
-      );
+      SendMessage("GameInterface", "ResolveAction", JSON.stringify({ type: "OnGoToNextLevel" }));
     });
   },
 
   OnGoToLevel: function () {
     window.GameInterface.onGoToLevel(function (level) {
-      SendMessage(
-        "GameInterface",
-        "ResolveAction",
-        JSON.stringify({ type: "OnGoToLevel", level })
-      );
+      SendMessage("GameInterface", "ResolveAction", JSON.stringify({ type: "OnGoToLevel", level }));
     });
   },
 
   OnRestartGame: function () {
     window.GameInterface.onRestartGame(function () {
-      SendMessage(
-        "GameInterface",
-        "ResolveAction",
-        JSON.stringify({ type: "OnRestartGame" })
-      );
+      SendMessage("GameInterface", "ResolveAction", JSON.stringify({ type: "OnRestartGame" }));
     });
   },
 
   OnQuitGame: function () {
     window.GameInterface.onQuitGame(function () {
-      SendMessage(
-        "GameInterface",
-        "ResolveAction",
-        JSON.stringify({ type: "OnQuitGame" })
-      );
+      SendMessage("GameInterface", "ResolveAction", JSON.stringify({ type: "OnQuitGame" }));
     });
   },
 
   OnGameOver: function () {
     window.GameInterface.onGameOver(function () {
-      SendMessage(
-        "GameInterface",
-        "ResolveAction",
-        JSON.stringify({ type: "OnGameOver" })
-      );
+      SendMessage("GameInterface", "ResolveAction", JSON.stringify({ type: "OnGameOver" }));
     });
   },
 
   GamePause: function (taskId) {
     window.GameInterface.gamePause().then(function () {
-      SendMessage(
-        "GameInterface",
-        "ResolveRequest",
-        JSON.stringify({ taskId, success: true })
-      );
+      SendMessage("GameInterface", "ResolveRequest", JSON.stringify({ taskId, success: true }));
     });
   },
 
   GameResume: function (taskId) {
     window.GameInterface.gameResume().then(function () {
-      SendMessage(
-        "GameInterface",
-        "ResolveRequest",
-        JSON.stringify({ taskId, success: true })
-      );
+      SendMessage("GameInterface", "ResolveRequest", JSON.stringify({ taskId, success: true }));
     });
   },
 
@@ -179,7 +127,7 @@ var GameInterface = {
     });
   },
 
-  IsHidden: function() {
+  IsHidden: function () {
     return document.hidden || document.mozHidden || document.webkitHidden || document.msHidden;
   },
 
@@ -188,31 +136,19 @@ var GameInterface = {
       return;
     }
 
-    const onVisibilityChanged = function() {
-      let hidden = document.hidden || document.mozHidden || document.webkitHidden || document.msHidden
-      SendMessage("GameInterface", "ResolveAction", JSON.stringify({ type: "OnVisibilityChange", hidden }) );
+    const onVisibilityChanged = function () {
+      let hidden = document.hidden || document.mozHidden || document.webkitHidden || document.msHidden;
+      SendMessage("GameInterface", "ResolveAction", JSON.stringify({ type: "OnVisibilityChange", hidden }));
     };
 
     if (typeof document.hidden !== "undefined") {
       document.addEventListener("visibilitychange", onVisibilityChanged, false);
     } else if (typeof document.mozHidden !== "undefined") {
-      document.addEventListener(
-        "mozvisibilitychange",
-        onVisibilityChanged,
-        false
-      );
+      document.addEventListener("mozvisibilitychange", onVisibilityChanged, false);
     } else if (typeof document.webkitHidden !== "undefined") {
-      document.addEventListener(
-        "webkitvisibilitychange",
-        onVisibilityChanged,
-        false
-      );
+      document.addEventListener("webkitvisibilitychange", onVisibilityChanged, false);
     } else if (typeof document.msHidden !== "undefined") {
-      document.addEventListener(
-        "msvisibilitychange",
-        onVisibilityChanged,
-        false
-      );
+      document.addEventListener("msvisibilitychange", onVisibilityChanged, false);
     }
   },
 
@@ -225,30 +161,16 @@ var GameInterface = {
   },
 
   GetCopyrightLogoURL: function (size, theme) {
-    return window.GameInterface.getCopyrightLogoURL(
-      UTF8ToString(size),
-      UTF8ToString(theme)
-    );
+    return window.GameInterface.getCopyrightLogoURL(UTF8ToString(size), UTF8ToString(theme));
   },
 
   ShowInterstitialAd: function (taskId, eventId, placementType) {
-    window.GameInterface.showInterstitialAd(
-      UTF8ToString(eventId),
-      UTF8ToString(placementType)
-    )
+    window.GameInterface.showInterstitialAd(UTF8ToString(eventId), UTF8ToString(placementType))
       .then(function (result) {
-        SendMessage(
-          "GameInterface",
-          "OnShowInterstitialAdPromiseResolved",
-          JSON.stringify({ taskId, success: true })
-        );
+        SendMessage("GameInterface", "OnShowInterstitialAdPromiseResolved", JSON.stringify({ taskId, success: true }));
       })
       .catch(function (error) {
-        SendMessage(
-          "GameInterface",
-          "OnShowInterstitialAdPromiseRejected",
-          JSON.stringify({ taskId, success: false })
-        );
+        SendMessage("GameInterface", "OnShowInterstitialAdPromiseRejected", JSON.stringify({ taskId, success: false }));
       });
   },
 
@@ -273,10 +195,7 @@ var GameInterface = {
   },
 
   OnRewardedAdAvailabilityChange: function () {
-    window.GameInterface.onRewardedAdAvailabilityChange(function (
-      eventId,
-      hasRewardedAd
-    ) {
+    window.GameInterface.onRewardedAdAvailabilityChange(function (eventId, hasRewardedAd) {
       var result = JSON.stringify({
         type: "OnRewardedAdAvailabilityChange",
         result: { eventId, hasRewardedAd },
@@ -287,14 +206,8 @@ var GameInterface = {
   },
 
   HasRewardedAd: function (taskId, eventId) {
-    window.GameInterface.hasRewardedAd(
-      UTF8ToString(eventId)
-    ).then(function (result) {
-      SendMessage(
-        "GameInterface",
-        "ResolveRequest",
-        JSON.stringify({ taskId, success: result })
-      );
+    window.GameInterface.hasRewardedAd(UTF8ToString(eventId)).then(function (result) {
+      SendMessage("GameInterface", "ResolveRequest", JSON.stringify({ taskId, success: result }));
     });
   },
 
@@ -388,10 +301,7 @@ var GameInterface = {
   },
 
   SetStorageItem: function (key, value) {
-    window.GameInterface.storage.setItem(
-      UTF8ToString(key),
-      UTF8ToString(value)
-    );
+    window.GameInterface.storage.setItem(UTF8ToString(key), UTF8ToString(value));
   },
 
   RemoveStorageItem: function (key) {
@@ -435,18 +345,10 @@ var GameInterface = {
       .getProducts()
       .then((products) => {
         console.log(products);
-        SendMessage(
-          "GameInterface",
-          "ResolveRequest",
-          JSON.stringify({ taskId, success: true, result: products })
-        );
+        SendMessage("GameInterface", "ResolveRequest", JSON.stringify({ taskId, success: true, result: products }));
       })
       .catch((e) => {
-        SendMessage(
-          "GameInterface",
-          "ResolveRequest",
-          JSON.stringify({ taskId, success: false })
-        );
+        SendMessage("GameInterface", "ResolveRequest", JSON.stringify({ taskId, success: false }));
       });
   },
 
@@ -455,18 +357,10 @@ var GameInterface = {
       .buyProduct(UTF8ToString(sku))
       .then((purchase) => {
         console.log(purchase);
-        SendMessage(
-          "GameInterface",
-          "ResolveRequest",
-          JSON.stringify({ taskId, success: true, result: purchase })
-        );
+        SendMessage("GameInterface", "ResolveRequest", JSON.stringify({ taskId, success: true, result: purchase }));
       })
       .catch((e) => {
-        SendMessage(
-          "GameInterface",
-          "ResolveRequest",
-          JSON.stringify({ taskId, success: false })
-        );
+        SendMessage("GameInterface", "ResolveRequest", JSON.stringify({ taskId, success: false }));
       });
   },
 
@@ -476,29 +370,17 @@ var GameInterface = {
       .consumeProduct(UTF8ToString(purchase))
       .then((result) => {
         console.log(result);
-        SendMessage(
-          "GameInterface",
-          "ResolveRequest",
-          JSON.stringify({ taskId, success: true, result })
-        );
+        SendMessage("GameInterface", "ResolveRequest", JSON.stringify({ taskId, success: true, result }));
       })
       .catch((e) => {
-        SendMessage(
-          "GameInterface",
-          "ResolveRequest",
-          JSON.stringify({ taskId, success: false })
-        );
+        SendMessage("GameInterface", "ResolveRequest", JSON.stringify({ taskId, success: false }));
       });
   },
 
   OnIAPEvent: function () {
     window.GameInterface.iap.onEvent(function (event) {
       console.log(event);
-      SendMessage(
-        "GameInterface",
-        "ResolveAction",
-        JSON.stringify({ type: "OnIAPEvent", iapEvent: event })
-      );
+      SendMessage("GameInterface", "ResolveAction", JSON.stringify({ type: "OnIAPEvent", iapEvent: event }));
     });
   },
 };

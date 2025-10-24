@@ -1,0 +1,16 @@
+{
+  "name": "famobi.game-interface-samples",
+  "rootNamespace": "",
+  "references": [
+    "famobi.game-interface"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

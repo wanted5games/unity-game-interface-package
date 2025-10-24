@@ -108,7 +108,22 @@ public partial class GameInterfaceTester
         public bool enabled;
     }
 
-    [SerializeField] public List<FeatureToggle> features = new List<FeatureToggle>();
+public FeatureToggle[] features = new FeatureToggle[]
+{
+    new FeatureToggle { name = "audio", enabled = true },
+    new FeatureToggle { name = "copyright", enabled = true },
+    new FeatureToggle { name = "credits", enabled = true },
+    new FeatureToggle { name = "iap", enabled = true },
+    new FeatureToggle { name = "pause", enabled = true },
+    new FeatureToggle { name = "privacy", enabled = true },
+    new FeatureToggle { name = "progress", enabled = true },
+    new FeatureToggle { name = "rewarded", enabled = true },
+    new FeatureToggle { name = "score", enabled = true },
+    new FeatureToggle { name = "tutorial", enabled = true },
+    new FeatureToggle { name = "version", enabled = true },
+    new FeatureToggle { name = "visibilitychange", enabled = true }
+
+};
 
     // Change detection dictionaries (editor only)
     private Dictionary<string, object> previousValues = new Dictionary<string, object>();
@@ -131,6 +146,8 @@ public partial class GameInterfaceTester
         previousValues["_isPaused"] = _isPaused;
         valueChangedCallbacks["_isPaused"] = value =>
             GameInterface.Instance?.InvokeOnPauseStateChange();
+
+        _previousOffset = _offsets;
     }
 
     private void OnValidate()
@@ -138,6 +155,10 @@ public partial class GameInterfaceTester
         CheckValueChange("_rewardedAdAvailable", _rewardedAdAvailable);
         CheckValueChange("_isMuted", _isMuted);
         CheckValueChange("_isPaused", _isPaused);
+
+        if (_previousOffset == null) {
+            return;
+        }
 
         if (_previousOffset.left != _offsets.left ||
             _previousOffset.right != _offsets.right ||
@@ -150,6 +171,8 @@ public partial class GameInterfaceTester
             _previousOffset.bottom = _offsets.bottom;
 
             OnOffsetChange();
+
+            _previousOffset = _offsets;
         }
     }
 

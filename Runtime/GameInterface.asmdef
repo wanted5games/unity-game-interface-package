@@ -1,0 +1,16 @@
+{
+  "name": "famobi.game-interface",
+  "references": [],
+  "includePlatforms": [
+    "WebGL",
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

@@ -9,20 +9,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8a9698eb46d4844cb0fd9e33f4c1e5b, type: 3}
+  m_Script: {fileID: 11500000, guid: 72426b95688aed4449d50e1ad0394f43, type: 3}
   m_Name: GameInterfaceTester
   m_EditorClassIdentifier: 
   _rewardedAdAvailable: 1
   _isMuted: 0
   _isPaused: 0
-  _targetLevel: 4
+  _targetLevel: 1
   _logoUrl: https://ik.imagekit.io/sjyfpsp1n/fa/assets/img/FbShareImage.jpg
   _offsets:
-    left: 100
-    right: 1
+    left: 0
+    right: 0
     top: 0
     bottom: 0
-  _language: 1
+  _language: 0
   features:
   - name: audio
     enabled: 1
