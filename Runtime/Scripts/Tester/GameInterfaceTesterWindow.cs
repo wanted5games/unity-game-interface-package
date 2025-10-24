@@ -1,0 +1,128 @@
+#if UNITY_EDITOR
+using UnityEditor;
+using UnityEngine;
+using System.Reflection;
+
+public class GameInterfaceTesterWindow : EditorWindow
+{
+    [MenuItem("Game Interface/Tester")]
+    public static void Open() => GetWindow<GameInterfaceTesterWindow>("Game Interface Tester");
+
+    private const string PREF_KEY = "GameInterfaceTesterWindow_LastGUID";
+
+    private GameInterfaceTester settings;
+    private SerializedObject serializedSettings;
+    private Vector2 scrollPos;
+
+    private void OnEnable()
+    {
+        // Try to restore last assigned asset from EditorPrefs
+        string guid = EditorPrefs.GetString(PREF_KEY, "");
+        if (!string.IsNullOrEmpty(guid))
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            settings = AssetDatabase.LoadAssetAtPath<GameInterfaceTester>(path);
+            if (settings)
+                serializedSettings = new SerializedObject(settings);
+        }
+    }
+
+    private void OnGUI()
+    {
+        // Begin scroll view
+        scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
+
+        EditorGUILayout.LabelField("Game Interface Tester", EditorStyles.boldLabel);
+        EditorGUILayout.Space();
+
+        // Asset assignment field
+        EditorGUI.BeginChangeCheck();
+        var newSettings = (GameInterfaceTester)EditorGUILayout.ObjectField("Settings Asset", settings, typeof(GameInterfaceTester), false);
+        if (EditorGUI.EndChangeCheck())
+        {
+            settings = newSettings;
+            serializedSettings = settings ? new SerializedObject(settings) : null;
+
+            if (settings)
+            {
+                string path = AssetDatabase.GetAssetPath(settings);
+                string guid = AssetDatabase.AssetPathToGUID(path);
+                EditorPrefs.SetString(PREF_KEY, guid); // Persist GUID
+            }
+            else
+            {
+                EditorPrefs.DeleteKey(PREF_KEY);
+            }
+        }
+
+        if (settings == null)
+        {
+            EditorGUILayout.HelpBox("No GameInterfaceTester assigned.", MessageType.Warning);
+            EditorGUILayout.EndScrollView();
+            return;
+        }
+
+        // Draw serialized fields
+        if (serializedSettings != null)
+        {
+            serializedSettings.Update();
+
+            EditorGUILayout.PropertyField(serializedSettings.FindProperty("features"), true);
+            EditorGUILayout.PropertyField(serializedSettings.FindProperty("_rewardedAdAvailable"), new GUIContent("Rewarded Ad Available"));
+            EditorGUILayout.PropertyField(serializedSettings.FindProperty("_isMuted"), new GUIContent("Is Muted"));
+            EditorGUILayout.PropertyField(serializedSettings.FindProperty("_isPaused"), new GUIContent("Is Paused"));
+            EditorGUILayout.PropertyField(serializedSettings.FindProperty("_offsets"), true);
+            EditorGUILayout.PropertyField(serializedSettings.FindProperty("_logoUrl"), new GUIContent("Logo URL"));
+
+            SerializedProperty langProp = serializedSettings.FindProperty("_language");
+            EditorGUILayout.PropertyField(langProp, new GUIContent("Language"));
+
+            serializedSettings.ApplyModifiedProperties();
+
+            if (GUI.changed)
+                EditorUtility.SetDirty(settings);
+        }
+
+        // Buttons
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Actions", EditorStyles.boldLabel);
+        DrawButtons(settings);
+
+        EditorGUILayout.EndScrollView();
+    }
+
+    private void DrawButtons(GameInterfaceTester target)
+    {
+        if (target == null) return;
+
+        var methods = target.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        foreach (var method in methods)
+        {
+            if (method.GetCustomAttributes(typeof(ContextMenu), true).Length > 0)
+            {
+                if (method.Name == "GoToLevel")
+                {
+                    EditorGUILayout.BeginHorizontal();
+                    // Flexible button
+                    if (GUILayout.Button("Go To Level", GUILayout.ExpandWidth(true)))
+                    {
+                        method.Invoke(target, null);
+                        EditorUtility.SetDirty(target);
+                    }
+                    // Integer field fixed width, aligned right
+                    target.targetLevel = EditorGUILayout.IntField(target.targetLevel, GUILayout.Width(60));
+                    EditorGUILayout.EndHorizontal();
+                }
+                else
+                {
+                    if (GUILayout.Button(method.Name))
+                    {
+                        method.Invoke(target, null);
+                        EditorUtility.SetDirty(target);
+                    }
+                }
+            }
+        }
+    }
+}
+#endif
