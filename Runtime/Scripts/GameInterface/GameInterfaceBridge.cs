@@ -10,6 +10,9 @@ public static class GameInterfaceBridge
     public static extern void GameReady();
 
     [DllImport("__Internal")]
+    public static extern void DisableSplashScreen();
+
+    [DllImport("__Internal")]
     public static extern void InitVisibilityChange();
 
     [DllImport("__Internal")]

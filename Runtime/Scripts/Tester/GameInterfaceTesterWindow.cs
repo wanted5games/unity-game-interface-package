@@ -33,6 +33,14 @@ public class GameInterfaceTesterWindow : EditorWindow
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
 
         EditorGUILayout.LabelField("Game Interface Tester", EditorStyles.boldLabel);
+
+        string _guid = EditorPrefs.GetString(PREF_KEY, "");
+        string _path = AssetDatabase.GUIDToAssetPath(_guid);
+
+        if (string.IsNullOrEmpty(_path))
+            _path = "No asset assigned.";
+
+        EditorGUILayout.LabelField("Asset Path:", _path);
         EditorGUILayout.Space();
 
         // Asset assignment field

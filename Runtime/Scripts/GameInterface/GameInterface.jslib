@@ -1,15 +1,5 @@
 var GameInterface = {
   GameReady: function () {
-    try {
-      const background = document.getElementById("background");
-      background.parentElement.removeChild(background);
-
-      const splash = document.getElementById("application-splash");
-      splash.parentElement.removeChild(splash);
-    } catch (e) {
-      console.log(e);
-    }
-
     window.GameInterface.gameReady();
   },
 
@@ -29,6 +19,18 @@ var GameInterface = {
       .catch(function (error) {
         SendMessage("GameInterface", "ResolveRequest", JSON.stringify({ taskId, success: false }));
       });
+  },
+
+  DisableSplashScreen: function () {
+    try {
+      const background = document.getElementById("background");
+      background.parentElement.removeChild(background);
+
+      const splash = document.getElementById("application-splash");
+      splash.parentElement.removeChild(splash);
+    } catch (e) {
+      console.log(e);
+    }
   },
 
   SendProgress: function (progress) {
@@ -206,7 +208,7 @@ var GameInterface = {
   },
 
   HasRewardedAd: function (taskId, eventId) {
-    if (!window.famobi.hasFeature("rewarded")) {
+    if (!window.GameInterface.hasFeature("rewarded")) {
       return Promise.resolve(JSON.stringify({ taskId, success: true, result: false }));
     }
 
@@ -216,7 +218,7 @@ var GameInterface = {
   },
 
   IsRewardedAdAvailable: function (eventId) {
-    if (!window.famobi.hasFeature("rewarded")) {
+    if (!window.GameInterface.hasFeature("rewarded")) {
       return false;
     }
 

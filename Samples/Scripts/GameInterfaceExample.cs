@@ -27,6 +27,7 @@ public class GameInterfaceExample : MonoBehaviour
         GameInterface.Instance.GameReady();
         GameInterface.Instance.InitVisibilityChange();
         isPaused = GameInterface.Instance.IsPaused();
+        GameInterface.Instance.DisableSplashScreen();
     }
 
     public void Start()
@@ -51,6 +52,13 @@ public class GameInterfaceExample : MonoBehaviour
 
     public void OnEnable()
     {
+        HandleRewardedAdAvailabilityChange(null, null);
+        CheckGameButtonState();
+        HandleOffsetChange(GameInterface.Instance.GetOffsets());
+
+        if (GameInterface.Instance == null)
+            return;
+
         GameInterface.Instance.OnGoToHome += HandleGoToHome;
         GameInterface.Instance.OnGoToLevel += HandleGoToLevel;
         GameInterface.Instance.OnGoToNextLevel += HandleGoToNextLevel;
@@ -67,14 +75,13 @@ public class GameInterfaceExample : MonoBehaviour
 
         GameInterface.Instance.OnIAPEvent += HandleIAPEvent;
         GameInterface.Instance.OnVisibilityChange += HandleVisibilityChange;
-
-        HandleRewardedAdAvailabilityChange(null, null);
-        CheckGameButtonState();
-        HandleOffsetChange(GameInterface.Instance.GetOffsets());
     }
 
     public void OnDisable()
     {
+        if (GameInterface.Instance == null)
+            return;
+
         GameInterface.Instance.OnGoToHome -= HandleGoToHome;
         GameInterface.Instance.OnGoToLevel -= HandleGoToLevel;
         GameInterface.Instance.OnGoToNextLevel -= HandleGoToNextLevel;
