@@ -26,6 +26,7 @@ public partial class GameInterfaceTester : ScriptableObject
 {
     // ---------------- Runtime Fields ----------------
     [SerializeField] private bool _rewardedAdAvailable = true;
+    [SerializeField] private bool _isRewardGranted = true;
     [SerializeField] private bool _isMuted = false;
     [SerializeField] private bool _isPaused = false;
     [SerializeField] private int _targetLevel = 1;
@@ -36,6 +37,7 @@ public partial class GameInterfaceTester : ScriptableObject
 
     // ---------------- Runtime Properties ----------------
     public bool rewardedAdAvailable { get => _rewardedAdAvailable; set => _rewardedAdAvailable = value; }
+    public bool isRewardGranted { get => _isRewardGranted; set => _isRewardGranted = value; }
     public bool isPaused { get => _isPaused; set => _isPaused = value; }
     public bool isMuted { get => _isMuted; set => _isMuted = value; }
     public int targetLevel { get => _targetLevel; set => _targetLevel = value; }

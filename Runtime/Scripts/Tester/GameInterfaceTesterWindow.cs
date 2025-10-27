@@ -77,6 +77,7 @@ public class GameInterfaceTesterWindow : EditorWindow
 
             EditorGUILayout.PropertyField(serializedSettings.FindProperty("features"), true);
             EditorGUILayout.PropertyField(serializedSettings.FindProperty("_rewardedAdAvailable"), new GUIContent("Rewarded Ad Available"));
+            EditorGUILayout.PropertyField(serializedSettings.FindProperty("_isRewardGranted"), new GUIContent("Is Reward Granted"));
             EditorGUILayout.PropertyField(serializedSettings.FindProperty("_isMuted"), new GUIContent("Is Muted"));
             EditorGUILayout.PropertyField(serializedSettings.FindProperty("_isPaused"), new GUIContent("Is Paused"));
             EditorGUILayout.PropertyField(serializedSettings.FindProperty("_offsets"), true);

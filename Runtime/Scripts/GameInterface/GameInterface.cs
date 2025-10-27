@@ -153,7 +153,7 @@ public partial class GameInterface
         {
             var rewarded = new ShowRewardedAdResult
             {
-                isRewardGranted = tester ? tester.rewardedAdAvailable : true,
+                isRewardGranted = tester ? tester.isRewardGranted : true,
             };
             result = (T)(object)rewarded;
 
