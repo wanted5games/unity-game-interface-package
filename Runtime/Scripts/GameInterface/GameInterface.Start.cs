@@ -42,7 +42,9 @@ public partial class GameInterface
 
     public void DisableSplashScreen()
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
         GameInterfaceBridge.DisableSplashScreen();
+#endif
     }
 
     public bool IsHidden()

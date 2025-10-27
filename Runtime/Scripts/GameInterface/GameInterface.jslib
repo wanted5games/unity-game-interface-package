@@ -169,10 +169,10 @@ var GameInterface = {
   ShowInterstitialAd: function (taskId, eventId, placementType) {
     window.GameInterface.showInterstitialAd(UTF8ToString(eventId), UTF8ToString(placementType))
       .then(function (result) {
-        SendMessage("GameInterface", "OnShowInterstitialAdPromiseResolved", JSON.stringify({ taskId, success: true }));
+        SendMessage("GameInterface", "ResolveRequest", JSON.stringify({ taskId, success: true }));
       })
       .catch(function (error) {
-        SendMessage("GameInterface", "OnShowInterstitialAdPromiseRejected", JSON.stringify({ taskId, success: false }));
+        SendMessage("GameInterface", "ResolveRequest", JSON.stringify({ taskId, success: false }));
       });
   },
 
@@ -288,14 +288,31 @@ var GameInterface = {
     return window.GameInterface.innerHeight;
   },
 
-  Track: function (event, data) {
-    var eventName = UTF8ToString(event);
-    var jsonData = JSON.parse(UTF8ToString(data));
+  Track: function (eventString, dataString) {
+    try {
+      var eventName = UTF8ToString(eventString);
+      var data = UTF8ToString(dataString);
+      const obj = {};
 
-    if (eventName && jsonData) {
-      window.GameInterface.track(eventName, jsonData);
-    } else if (!eventName && jsonData.event) {
-      window.GameInterface.track(jsonData);
+      if (eventName && data) {
+        const dictionary = JSON.parse(data);
+
+        for (const key in dictionary.keys) {
+          obj[dictionary.keys[key]] = dictionary.values[key];
+        }
+
+        window.GameInterface.track(eventName, obj);
+      } else if (eventName && !data) {
+        const dictionary = JSON.parse(eventName);
+
+        for (const key in dictionary.keys) {
+          obj[dictionary.keys[key]] = dictionary.values[key];
+        }
+
+        window.GameInterface.track(obj);
+      }
+    } catch (e) {
+      console.error(e);
     }
   },
 

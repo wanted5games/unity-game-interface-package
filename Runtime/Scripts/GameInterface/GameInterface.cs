@@ -6,16 +6,39 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-public partial class GameInterface : MonoBehaviour
+public partial class GameInterface
 {
     private const string PREF_KEY = "GameInterfaceTesterWindow_LastGUID";
 
     // Singleton instance for callbacks
-    public static GameInterface Instance { get; private set; }
+    private static GameInterface _instance;
+    public static GameInterface Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = new GameInterface();
+                _instance.Start();
+                var go = new GameObject("GameInterface");
+                go.AddComponent<GameInterfaceGameObject>();
+            }
+
+            return _instance;
+        }
+    }
     public static GameInterface GetInstance()
     {
-        return Instance;
-    }
+        if (_instance == null)
+        {
+            _instance = new GameInterface();
+            _instance.Start();
+            var go = new GameObject("GameInterface");
+            go.AddComponent<GameInterfaceGameObject>();
+        }
+            
+        return _instance;
+    }   
 
     private GameInterfaceTester tester;
 
@@ -225,39 +248,17 @@ public partial class GameInterface : MonoBehaviour
         }
     }
 
-    private void Awake()
+    private void Start()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-
 #if UNITY_EDITOR
-
         EditorPrefs.GetString(GameInterfaceTesterWindow.PREF_KEY, ""); // Get the tester
 
         string guid = EditorPrefs.GetString(PREF_KEY, "");
         string path = !string.IsNullOrEmpty(guid)
             ? AssetDatabase.GUIDToAssetPath(guid) : GameInterfaceTesterWindow.PREF_PATH;
         tester = AssetDatabase.LoadAssetAtPath<GameInterfaceTester>(path);
- #endif
-    }
+#endif
 
-    private void OnDestroy()
-    {
-        if (Instance == this)
-        {
-            Instance = null;
-        }
-    }
-
-    private void Start()
-    {
 #if UNITY_WEBGL && !UNITY_EDITOR
         GameInterfaceBridge.OnGoToHome();
         GameInterfaceBridge.OnGoToNextLevel();
@@ -272,6 +273,7 @@ public partial class GameInterface : MonoBehaviour
 
         GameInterfaceBridge.OnRewardedAdAvailabilityChange();
         GameInterfaceBridge.OnOffsetChange(true);
+        Debug.Log("[GI] GameInterface initialized and callbacks registered.");
 #endif
         InitAds();
     }
@@ -347,4 +349,24 @@ class PendingRequest<T> : IPendingRequest
     }
 
     public Task<T> Task => tcs.Task;
+}
+
+public class GameInterfaceGameObject : MonoBehaviour
+{
+    private void Awake()
+    {
+        DontDestroyOnLoad(this.gameObject);
+    }
+
+    public void ResolveRequest(string json)
+    {
+        Debug.Log("[GI] ResolveRequest called with json: " + json);
+        GameInterface.Instance.ResolveRequest(json);
+    }
+
+    public void ResolveAction(string json)
+    {
+        Debug.Log("[GI] ResolveAction called with json: " + json);
+        GameInterface.Instance.ResolveAction(json);
+    }   
 }
