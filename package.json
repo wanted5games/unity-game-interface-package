@@ -1,8 +1,8 @@
 {
   "name": "com.famobi.game-interface",
   "version": "0.1.0",
-  "displayName": "GameInterface",
-  "description": "Plugin to easily integrate GameInterface API into Unity projects.",
+  "displayName": "Game Interface",
+  "description": "Plugin to easily integrate GameInterface API into Unity projects. For more information about the API, visit https://famobi.atlassian.net/wiki/spaces/GI1/pages/1982332934/TL+DR",
   "unity": "2022.3",
   "author": {
     "name": "Your Name",

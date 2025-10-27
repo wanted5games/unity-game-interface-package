@@ -30,7 +30,7 @@ public partial class GameInterface
 #if UNITY_WEBGL && !UNITY_EDITOR
         return GameInterfaceBridge.IsMuted();
 #else
-        return tester.isMuted;
+        return tester ? tester.isMuted : false;
 #endif
     }
 

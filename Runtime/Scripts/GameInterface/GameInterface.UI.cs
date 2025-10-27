@@ -24,7 +24,7 @@
 #if UNITY_WEBGL && !UNITY_EDITOR
         return GameInterfaceBridge.GetCopyrightLogoURL(size, theme);
 #else
-        return tester.logoUrl;
+        return tester ? tester.logoUrl : "";
 #endif
     }
 }

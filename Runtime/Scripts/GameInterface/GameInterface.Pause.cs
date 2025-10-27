@@ -25,7 +25,7 @@ public partial class GameInterface
 #if UNITY_WEBGL && !UNITY_EDITOR
         return GameInterfaceBridge.IsPaused();
 #else
-        return tester.isPaused;
+        return tester ? tester.isPaused : false;
 #endif
     }
 }

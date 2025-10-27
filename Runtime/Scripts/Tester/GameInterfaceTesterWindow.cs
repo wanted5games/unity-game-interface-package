@@ -8,7 +8,8 @@ public class GameInterfaceTesterWindow : EditorWindow
     [MenuItem("Game Interface/Tester")]
     public static void Open() => GetWindow<GameInterfaceTesterWindow>("Game Interface Tester");
 
-    private const string PREF_KEY = "GameInterfaceTesterWindow_LastGUID";
+    public static readonly string PREF_KEY = "GameInterfaceTesterWindow_LastGUID";
+    public static readonly string PREF_PATH = "Packages/com.famobi.game-interface/Samples/Settings/GameInterfaceTester.asset";
 
     private GameInterfaceTester settings;
     private SerializedObject serializedSettings;
@@ -18,13 +19,12 @@ public class GameInterfaceTesterWindow : EditorWindow
     {
         // Try to restore last assigned asset from EditorPrefs
         string guid = EditorPrefs.GetString(PREF_KEY, "");
-        if (!string.IsNullOrEmpty(guid))
-        {
-            string path = AssetDatabase.GUIDToAssetPath(guid);
-            settings = AssetDatabase.LoadAssetAtPath<GameInterfaceTester>(path);
-            if (settings)
-                serializedSettings = new SerializedObject(settings);
-        }
+
+        string path = !string.IsNullOrEmpty(guid)
+            ? AssetDatabase.GUIDToAssetPath(guid) : PREF_PATH;
+        settings = AssetDatabase.LoadAssetAtPath<GameInterfaceTester>(path);
+        if (settings)
+            serializedSettings = new SerializedObject(settings);
     }
 
     private void OnGUI()

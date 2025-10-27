@@ -48,7 +48,7 @@ public partial class GameInterface
     /// <param name="eventId"></param>
     /// <param name="placementType"></param>
     /// <returns></returns>
-    public Task ShowInterstitialAd(string eventId, string? placementType, Action onAdClosed = null)
+    public Task ShowInterstitialAd(string eventId, string placementType = "", Action onAdClosed = null)
     {
         return ExecuteWebGLRequest(id => GameInterfaceBridge.ShowInterstitialAd(id, eventId, placementType), onAdClosed);
     }
@@ -87,7 +87,7 @@ public partial class GameInterface
 #if UNITY_WEBGL && !UNITY_EDITOR
         return GameInterfaceBridge.IsRewardedAdAvailable(eventId);
 #else
-        return tester.rewardedAdAvailable;
+        return tester ? tester.rewardedAdAvailable : true;
 #endif
     }
 
@@ -111,7 +111,12 @@ public partial class GameInterface
             bottom = 0
         };
 #else
-        return tester.offsets;
+        return tester ? tester.offsets : new OffsetResult {
+            left = 0,
+            right = 0,
+            top = 0,
+            bottom = 0
+        };
 #endif
     }
 }

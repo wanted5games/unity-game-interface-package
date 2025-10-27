@@ -13,7 +13,12 @@ public partial class GameInterface
     {
         string json = data != null ? JsonUtility.ToJson(new SerializableDictionary(data)) : "{}";
         string eventName = GAEventTypeToString(eventType);
+
+#if UNITY_WEBGL && !UNITY_EDITOR
         GameInterfaceBridge.Track(eventName, json);
+#else
+        Debug.Log($"[GameInterface Tester] Track called with event: {eventName}, data: {json}");
+#endif
     }
 
     /// <summary>
@@ -41,9 +46,15 @@ public partial class GameInterface
         {
             throw new ArgumentException("Invalid GAEventType provided in 'event' key.");
         }
+        data["event"] = eventName; // Replace enum with string for serialization
 
         string json = data != null ? JsonUtility.ToJson(new SerializableDictionary(data)) : "{}";
+
+#if UNITY_WEBGL && !UNITY_EDITOR
         GameInterfaceBridge.Track(json, null);
+#else
+        Debug.Log($"[GameInterface Tester] Track called with event: {eventName}, data: {json}");
+#endif
     }
 
     private string GAEventTypeToString(GAEventType eventType)

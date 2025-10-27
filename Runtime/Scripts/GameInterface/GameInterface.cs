@@ -2,9 +2,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public partial class GameInterface : MonoBehaviour
 {
+    private const string PREF_KEY = "GameInterfaceTesterWindow_LastGUID";
+
     // Singleton instance for callbacks
     public static GameInterface Instance { get; private set; }
     public static GameInterface GetInstance()
@@ -12,7 +17,7 @@ public partial class GameInterface : MonoBehaviour
         return Instance;
     }
 
-    public GameInterfaceTester tester;
+    private GameInterfaceTester tester;
 
     private int _nextRequestId = 1;
     private Dictionary<int, IPendingRequest> _pendingRequests = new Dictionary<int, IPendingRequest>();
@@ -125,17 +130,19 @@ public partial class GameInterface : MonoBehaviour
         {
             var rewarded = new ShowRewardedAdResult
             {
-                isRewardGranted = tester.rewardedAdAvailable,
+                isRewardGranted = tester ? tester.rewardedAdAvailable : true,
             };
             result = (T)(object)rewarded;
 
-            tester.rewardedAdAvailable = false;
-            InvokeOnRewardedAdAvailabilityChange(null, tester.rewardedAdAvailable);
+            if (tester) 
+            {
+                InvokeOnRewardedAdAvailabilityChange(null, tester.rewardedAdAvailable);
 
-            await Task.Delay(500);
+                await Task.Delay(500);
 
-            tester.rewardedAdAvailable = rewarded.isRewardGranted;
-            InvokeOnRewardedAdAvailabilityChange(null, tester.rewardedAdAvailable);
+                tester.rewardedAdAvailable = rewarded.isRewardGranted;
+                InvokeOnRewardedAdAvailabilityChange(null, tester.rewardedAdAvailable);
+            }
         }
         // For other reference types, just create a new instance if possible
         else if (typeof(T).IsClass)
@@ -229,6 +236,16 @@ public partial class GameInterface : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+#if UNITY_EDITOR
+
+        EditorPrefs.GetString(GameInterfaceTesterWindow.PREF_KEY, ""); // Get the tester
+
+        string guid = EditorPrefs.GetString(PREF_KEY, "");
+        string path = !string.IsNullOrEmpty(guid)
+            ? AssetDatabase.GUIDToAssetPath(guid) : GameInterfaceTesterWindow.PREF_PATH;
+        tester = AssetDatabase.LoadAssetAtPath<GameInterfaceTester>(path);
+ #endif
     }
 
     private void OnDestroy()

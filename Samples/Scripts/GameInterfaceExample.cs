@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Text;
 using System.Collections;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 public class GameInterfaceExample : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class GameInterfaceExample : MonoBehaviour
     [SerializeField] private GameObject Version;
     [SerializeField] private GameObject Copyright;
 
+    private bool starting = false;
     private bool inGame = false;
     private bool isPaused = false;
 
@@ -203,21 +205,46 @@ public class GameInterfaceExample : MonoBehaviour
         }
     }
 
-    public void GameStart()
+    public async void GameStart()
     {
-        GameInterface.Instance.GameStart(1, () =>
+        if (starting || inGame)
         {
-            ToastManager.Instance.ShowToast("[GI Tester] GameStart callback executed for level 1");
+            ToastManager.Instance.ShowToast("[GI Tester] Game is already starting or in progress");
+            return;
+        }
 
-            inGame = true;
-            CheckGameButtonState();
-        });
+        starting = true;
+        CheckGameButtonState();
+
+        await GameInterface.Instance.ShowInterstitialAd("button:menu:start");
+        ToastManager.Instance.ShowToast("[GI Tester] Interstitial Ad shown before GameStart");
+        await GameInterface.Instance.GameStart(1);
+        ToastManager.Instance.ShowToast("[GI Tester] GameStart callback executed for level 1");
+
+        Dictionary<string, object> eventData = new Dictionary<string, object>
+        {
+            { "event", GAEventType.DESIGN },
+            { "eventId", "Game:Start:Level_1" },
+        };
+
+        GameInterface.Instance.Track(eventData);
+
+        starting = false;
+        inGame = true;
+        CheckGameButtonState();
     }
 
     public void GameComplete()
     {
         GameInterface.Instance.GameComplete(() =>
         {
+            Dictionary<string, object> eventData = new Dictionary<string, object>
+            {
+                { "eventId", "Game:Complete:Level_1" },
+            };
+
+            GameInterface.Instance.Track(GAEventType.DESIGN, eventData);
+
             ToastManager.Instance.ShowToast("[GI Tester] GameComplete callback executed");
 
             inGame = false;
@@ -234,6 +261,15 @@ public class GameInterfaceExample : MonoBehaviour
     {
         Task task = GameInterface.Instance.GameQuit();
         yield return TaskExtensions.WaitForTask(task);
+
+        Dictionary<string, object> eventData = new Dictionary<string, object>
+        {
+            { "event", GAEventType.DESIGN },
+            { "eventId", "Game:Quit:Level_1" },
+        };
+
+        GameInterface.Instance.Track(eventData);
+
         ToastManager.Instance.ShowToast("[GI Tester] GameQuit callback executed");
         inGame = false;
         CheckGameButtonState();
@@ -295,7 +331,7 @@ public class GameInterfaceExample : MonoBehaviour
 
     private void CheckGameButtonState()
     {
-        GameStartButton.interactable = !inGame;
+        GameStartButton.interactable = !inGame && !starting;
         GameCompleteButton.interactable = inGame;
         GameQuitButton.interactable = inGame;
         GamePauseButton.interactable = inGame && !isPaused;

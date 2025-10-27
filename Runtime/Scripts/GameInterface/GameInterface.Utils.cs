@@ -14,9 +14,9 @@ public partial class GameInterface
 	public bool HasFeature(string feature)
 	{
 #if UNITY_WEBGL && !UNITY_EDITOR
-        	return GameInterfaceBridge.HasFeature(feature);
+        return GameInterfaceBridge.HasFeature(feature);
 #else
-		return tester.HasFeature(feature);
+		return tester ? tester.HasFeature(feature) : true;
 #endif
 	}
 
@@ -34,7 +34,7 @@ public partial class GameInterface
 #if UNITY_WEBGL && !UNITY_EDITOR
         return GameInterfaceBridge.GetCurrentLanguage();
 #else
-		return tester.ToLocale();
+		return tester ? tester.ToLocale() : "en";
 #endif
 	}
 

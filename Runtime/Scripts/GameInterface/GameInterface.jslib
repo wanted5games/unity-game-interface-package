@@ -206,12 +206,20 @@ var GameInterface = {
   },
 
   HasRewardedAd: function (taskId, eventId) {
+    if (!window.famobi.hasFeature("rewarded")) {
+      return Promise.resolve(JSON.stringify({ taskId, success: true, result: false }));
+    }
+
     window.GameInterface.hasRewardedAd(UTF8ToString(eventId)).then(function (result) {
-      SendMessage("GameInterface", "ResolveRequest", JSON.stringify({ taskId, success: result }));
+      SendMessage("GameInterface", "ResolveRequest", JSON.stringify({ taskId, success: true, result }));
     });
   },
 
   IsRewardedAdAvailable: function (eventId) {
+    if (!window.famobi.hasFeature("rewarded")) {
+      return false;
+    }
+
     return window.GameInterface.isRewardedAdAvailable(UTF8ToString(eventId));
   },
 
