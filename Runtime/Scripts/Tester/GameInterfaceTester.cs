@@ -139,7 +139,7 @@ public FeatureToggle[] features = new FeatureToggle[]
         // Register boolean callbacks
         previousValues["_rewardedAdAvailable"] = _rewardedAdAvailable;
         valueChangedCallbacks["_rewardedAdAvailable"] = value =>
-            GameInterface.Instance?.InvokeOnRewardedAdAvailabilityChange(null, null);
+            GameInterface.Instance?.InvokeOnRewardedAdAvailabilityChange();
 
         previousValues["_isMuted"] = _isMuted;
         valueChangedCallbacks["_isMuted"] = value =>

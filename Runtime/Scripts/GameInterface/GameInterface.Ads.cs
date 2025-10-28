@@ -7,8 +7,8 @@ public partial class GameInterface
     /// <summary>
     /// Listen for rewarded ad availability changes to update relevant UI elements accordingly. This will also be executed every second, because the availability can change at any time. Make sure to use <c>IsRewardedAdAvailable(eventId)</c> to get the current status.
     /// </summary>
-    public event Action<string?, bool?> OnRewardedAdAvailabilityChange;
-    public void InvokeOnRewardedAdAvailabilityChange(string? eventId, bool? isAvailable)
+    public event Action<string, bool> OnRewardedAdAvailabilityChange;
+    public void InvokeOnRewardedAdAvailabilityChange(string eventId = null, bool isAvailable = false)
     {
         OnRewardedAdAvailabilityChange?.Invoke(eventId, isAvailable);
     }
@@ -48,9 +48,9 @@ public partial class GameInterface
     /// <param name="eventId"></param>
     /// <param name="placementType"></param>
     /// <returns></returns>
-    public Task ShowInterstitialAd(string eventId, string placementType = "", Action onAdClosed = null)
+    public Task ShowInterstitialAd(string eventId, string placementType = "", Action onAdClosed = null, Action<string> onAdFailed = null)
     {
-        return ExecuteWebGLRequest(id => GameInterfaceBridge.ShowInterstitialAd(id, eventId, placementType), onAdClosed);
+        return ExecuteWebGLRequest(id => GameInterfaceBridge.ShowInterstitialAd(id, eventId, placementType), onAdClosed, onAdFailed);
     }
 
     /// <summary>
@@ -60,9 +60,9 @@ public partial class GameInterface
     /// <param name="onAdClosed"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public Task<ShowRewardedAdResult> ShowRewardedAd(string eventId, Action<ShowRewardedAdResult> onAdClosed = null)
+    public Task<RewardedAdResult> ShowRewardedAd(string eventId, Action<RewardedAdResult> onAdClosed = null, Action<string> onAdFailed = null)
     {
-        return ExecuteWebGLRequest<ShowRewardedAdResult>(id => GameInterfaceBridge.ShowRewardedAd(id, eventId), onAdClosed);
+        return ExecuteWebGLRequest<RewardedAdResult>(id => GameInterfaceBridge.ShowRewardedAd(id, eventId), onAdClosed, onAdFailed);
     }
 
     /// <summary>
@@ -71,9 +71,9 @@ public partial class GameInterface
     /// </summary>
     /// <param name="eventId"></param>
     /// <returns></returns>
-    public Task<bool> HasRewardedAd(string eventId, Action<bool> onResult = null)
+    public Task<bool> HasRewardedAd(string eventId, Action<bool> onResult = null, Action<string> onError = null)
     {
-        return ExecuteWebGLRequest<bool>(id => GameInterfaceBridge.HasRewardedAd(id, eventId), onResult);
+        return ExecuteWebGLRequest<bool>(id => GameInterfaceBridge.HasRewardedAd(id, eventId), onResult, onError);
     }
 
     /// <summary>
@@ -121,7 +121,7 @@ public partial class GameInterface
     }
 }
 
-public class ShowRewardedAdResult
+public class RewardedAdResult
 {
     public bool isRewardGranted;
 }

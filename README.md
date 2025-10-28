@@ -3,26 +3,46 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
-- [Installation](#-installation)
+- [Installation](#installation)
+- [Before you start](#before-you-start)
 - [Usage](#usage)
   - [Promises](#promises)
     - [Callback](#callback)
     - [Async/Await](#asyncawait)
     - [Coroutines](#coroutines)
-  - [Events Handling](#events)
+  - [Events Handling](#events-handling)
   - [New Features](#new-features)
-  - [Custom Splash Screen](#custom-splash-screen)
 - [Runtime testing](#runtime-testing)
 - [Samples](#samples)
+- [Build](#build)
+  - [WebGL Template](#webgl-template)
+  - [Custom Splash Screen](#custom-splash-screen)
+  - [Post Build Validator](#post-build-validator)
 
 ## Introduction
 
-**Game Interface** provides a bridge between Unity’s C# environment and JavaScript APIs.  
+**Game Interface Package** provides a bridge between Unity’s C# environment and JavaScript APIs.  
 It allows your Unity games to seamlessly communicate with the GameInterface web layer.
 
 This package simplifies integration by exposing a single entry point — the `GameInterface` singleton.
 
-## 📦 Installation
+## Before you start
+
+Before implementing anything, read the official Game Interface documentation (TL;DR) end‑to‑end. It defines the contract your game must follow:
+
+• TL;DR: https://famobi.atlassian.net/wiki/spaces/GI1/pages/1982332934/TL+DR
+
+Key areas to pay attention to (you will likely need all of these):
+
+- START: init timing, preload progress, gameReady
+- GAME: gameStart/gameComplete/gameOver/gameQuit sequencing
+- AUDIO/PAUSE: master mute/pause handling and feature flags
+- ADS: button/break triggers, rewarded availability, banner offsets, eventIds in famobi.json
+- STORAGE/TRACKING: replace storage, GA events
+
+If something in this README differs from the TL;DR, the TL;DR wins.
+
+## Installation
 
 You can install the Game Interface package directly from Git using [Unity’s Package Manager](https://docs.unity3d.com/Manual/upm-ui-giturl.html).
 
@@ -37,10 +57,11 @@ https://github.com/.....
 ## Usage
 
 All API calls are accessible via the `GameInterface` singleton instance.
+The documentation of GameInterface can be found [here](https://famobi.atlassian.net/wiki/spaces/GI1/pages/1982332934/TL+DR). Please read this thoroughly.
+This singleton mirrors the JavaScript API described in the documentation as closely as possible.
 
 ```C#
 GameInterface.Instance.GameReady();
-GameInterface.GetInstance().GameReady();
 ```
 
 ### Promises
@@ -87,11 +108,12 @@ You can also wait for asynchronous operations inside a coroutine.
 ```C#
 private IEnumerator ShowRewardedAdCoroutine()
 {
-    Task task = GameInterface.Instance.ShowRewardedAd("test_event");
+    Task<RewardedAdResult> task = GameInterface.Instance.ShowRewardedAd("test_event");
     yield return TaskExtensions.WaitForTask(task);
     var result = task.Result;
 
-    if (result.isRewardGranted) {
+    if (result.isRewardGranted)
+    {
         // Reward the player.
     }
 }
@@ -105,11 +127,13 @@ You can listen for Game Interface events (e.g., OnGoToNextLevel) by subscribing 
 public void OnEnable()
 {
     GameInterface.Instance.OnGoToNextLevel += HandleGoToNextLevel;
+    GameInterface.Instance.OnRewardedAdAvailabilityChange += HandleRewardedAdAvailabilityChange;
 }
 
 public void OnDisable()
 {
     GameInterface.Instance.OnGoToNextLevel -= HandleGoToNextLevel;
+    GameInterface.Instance.OnRewardedAdAvailabilityChange -= HandleRewardedAdAvailabilityChange;
 }
 
 ```
@@ -130,10 +154,6 @@ GameInterface.Instance.InitVisibilityChange();
 // Resize the game canvas, applying the offset for the banner.
 GameInterface.Instance.ResizeGameCanvas();
 ```
-
-### Custom Splash Screen
-
-The Game Interface splash screen is a custom HTML/CSS page that displays when the game first loads. You can edit it to match your game’s branding, but avoid removing required JavaScript hooks. You can edit it in the file `index.html`.
 
 ## Runtime testing
 
@@ -163,6 +183,8 @@ When importing this package, a new folder named Game Interface is automatically 
 This folder contains a required WebGL Template used for proper integration with the JavaScript API.
 If the folder was not created automatically, copy it manually from: `Packages/Game Interface/WebGLTemplates`
 
+### WebGL Template
+
 Before making a build, make sure that you have selected the WebGLTemplate in the PlayerSettings
 
 Before building your WebGL project:
@@ -175,15 +197,19 @@ Select the WebGL Template created by the package.
 
 💡 Tip: Always use the provided WebGL Template when building your game to ensure correct integration with the Game Interface runtime.
 
-### Post Build Checker
+### Custom Splash Screen
+
+The Game Interface splash screen is a custom HTML/CSS page that displays when the game first loads. You can edit it to match your game’s branding, but avoid removing required JavaScript hooks. You can edit it in the file `index.html`.
+
+### Post Build Validator
 
 After creating a WebGL build, the package runs post-build scripts to ensure your build complies with Game Interface standards.
 These checks help prevent runtime errors and ensure smooth integration with the Game Interface API.
 
 The checker verifies:
 
-- [ ] No single file is larger than 10 MB.
-- [ ] The total bundle size does not exceed 100 MB.
-- [ ] File and folder names do not contain symbols or spaces.
-- [ ] A compression format is selected.
-- [ ] Compression fallback is enabled.
+- [x] No single file is larger than 10 MB.
+- [x] The total bundle size does not exceed 100 MB.
+- [x] File and folder names do not contain symbols or spaces.
+- [x] A compression format is selected.
+- [x] Compression fallback is enabled.

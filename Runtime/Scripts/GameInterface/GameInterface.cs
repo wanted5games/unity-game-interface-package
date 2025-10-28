@@ -123,7 +123,8 @@ public partial class GameInterface
             }
             else
             {
-                pending.SetException(new Exception("Ad failed or closed."));
+                var message = string.IsNullOrEmpty(response.error) ? "Request failed or was cancelled." : response.error;
+                pending.SetException(new Exception(message));
             }
         }
         catch (Exception ex)
@@ -132,14 +133,22 @@ public partial class GameInterface
             pending.SetException(ex);
         }
     }
-    private async Task<T> ExecuteWebGLRequest<T>(Action<int> webglAction, Action<T> onComplete = null)
+    private async Task<T> ExecuteWebGLRequest<T>(Action<int> webglAction, Action<T> onComplete = null, Action<string> onError = null)
     {
         T result;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         var taskId = GetNextRequestId();
         webglAction(taskId);
-        result = await AwaitJsPromise<T>(taskId);
+        try
+        {
+            result = await AwaitJsPromise<T>(taskId);
+        }
+        catch (Exception e)
+        {
+            onError?.Invoke(e.Message);
+            throw;
+        }
 #else
         await Task.Delay(100);
 
@@ -149,9 +158,9 @@ public partial class GameInterface
             result = (T)(object)(UnityEngine.Random.value <= 0.9f);
         }
 
-        else if (typeof(T) == typeof(ShowRewardedAdResult))
+        else if (typeof(T) == typeof(RewardedAdResult))
         {
-            var rewarded = new ShowRewardedAdResult
+            var rewarded = new RewardedAdResult
             {
                 isRewardGranted = tester ? tester.isRewardGranted : true,
             };
@@ -159,11 +168,10 @@ public partial class GameInterface
 
             if (tester) 
             {
+                tester.rewardedAdAvailable = false;
                 InvokeOnRewardedAdAvailabilityChange(null, tester.rewardedAdAvailable);
-
                 await Task.Delay(500);
-
-                tester.rewardedAdAvailable = rewarded.isRewardGranted;
+                tester.rewardedAdAvailable = true;
                 InvokeOnRewardedAdAvailabilityChange(null, tester.rewardedAdAvailable);
             }
         }
@@ -183,12 +191,20 @@ public partial class GameInterface
         return result;
     }
 
-    private async Task ExecuteWebGLRequest(Action<int> webglAction, Action onComplete = null)
+    private async Task ExecuteWebGLRequest(Action<int> webglAction, Action onComplete = null, Action<string> onError = null)
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
          var taskId = GetNextRequestId();
          webglAction(taskId);
-         await AwaitJsPromise<object>(taskId);
+         try
+         {
+             await AwaitJsPromise<object>(taskId);
+         }
+         catch (Exception e)
+         {
+             onError?.Invoke(e.Message);
+             throw;
+         }
 #else
         await Task.Delay(100);
 #endif
@@ -286,6 +302,7 @@ public class RequestResult
     public int taskId;       // The ID of the request
     public bool success;     // True if JS promise resolved, false if rejected
     public string result;    // JSON string representing the actual result (any type)
+    public string error;     // Error message if rejected
 }
 
 public class JsonActionData

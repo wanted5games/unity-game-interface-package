@@ -15,7 +15,7 @@ public partial class GameInterface
         while (true)
         {
             yield return new WaitForSeconds(1f);
-            OnRewardedAdAvailabilityChange?.Invoke(null, null);
+            OnRewardedAdAvailabilityChange?.Invoke(string.Empty, false);
         }
     }
 

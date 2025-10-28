@@ -78,9 +78,9 @@ public partial class GameInterface
     /// </summary>
     /// <param name="level"></param>
     /// <returns></returns>
-    public Task GameStart(int? level = null, Action onComplete = null)
+    public Task GameStart(int? level = null, Action onComplete = null, Action<string> onError = null)
     {
-        return ExecuteWebGLRequest(id => GameInterfaceBridge.GameStart(id, level ?? -999), onComplete);
+        return ExecuteWebGLRequest(id => GameInterfaceBridge.GameStart(id, level ?? -999), onComplete, onError);
     }
 
     /// <summary>
@@ -90,9 +90,9 @@ public partial class GameInterface
     /// <param name="onComplete"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public Task GameComplete(Action onComplete = null)
+    public Task GameComplete(Action onComplete = null, Action<string> onError = null)
     {
-        return ExecuteWebGLRequest(id => GameInterfaceBridge.GameComplete(id), onComplete);
+        return ExecuteWebGLRequest(id => GameInterfaceBridge.GameComplete(id), onComplete, onError);
     }
 
     /// <summary>
@@ -103,9 +103,9 @@ public partial class GameInterface
     /// <param name="onComplete"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public Task GameOver(Action onComplete = null)
+    public Task GameOver(Action onComplete = null, Action<string> onError = null)
     {
-        return ExecuteWebGLRequest(id => GameInterfaceBridge.GameOver(id), onComplete);
+        return ExecuteWebGLRequest(id => GameInterfaceBridge.GameOver(id), onComplete, onError);
     }
 
     /// <summary>
@@ -115,9 +115,9 @@ public partial class GameInterface
     /// <param name="onComplete"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public Task GameQuit(Action onComplete = null)
+    public Task GameQuit(Action onComplete = null, Action<string> onError = null)
     {
-        return ExecuteWebGLRequest(id => GameInterfaceBridge.GameQuit(id), onComplete);
+        return ExecuteWebGLRequest(id => GameInterfaceBridge.GameQuit(id), onComplete, onError);
     }
 
     /// <summary>
@@ -126,9 +126,9 @@ public partial class GameInterface
     /// <param name="onComplete"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public Task GamePause(Action onComplete = null)
+    public Task GamePause(Action onComplete = null, Action<string> onError = null)
     {
-        return ExecuteWebGLRequest(id => GameInterfaceBridge.GamePause(id), onComplete);
+        return ExecuteWebGLRequest(id => GameInterfaceBridge.GamePause(id), onComplete, onError);
     }
 
     /// <summary>
@@ -137,8 +137,8 @@ public partial class GameInterface
     /// <param name="onComplete"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public Task GameResume(Action onComplete = null)
+    public Task GameResume(Action onComplete = null, Action<string> onError = null)
     {
-        return ExecuteWebGLRequest(id => GameInterfaceBridge.GameResume(id), onComplete);
+        return ExecuteWebGLRequest(id => GameInterfaceBridge.GameResume(id), onComplete, onError);
     }
 }

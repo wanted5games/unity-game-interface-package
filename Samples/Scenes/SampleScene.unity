@@ -1195,6 +1195,7 @@ GameObject:
   - component: {fileID: 532862838}
   - component: {fileID: 532862837}
   - component: {fileID: 532862836}
+  - component: {fileID: 532862839}
   m_Layer: 5
   m_Name: ShowRewarded Button
   m_TagString: Untagged
@@ -1316,6 +1317,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 532862834}
   m_CullTransparentMesh: 1
+--- !u!114 &532862839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 532862834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f61d9ae321fedb45b5d6135b9d1879c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventName: test_event
 --- !u!1 &607308232
 GameObject:
   m_ObjectHideFlags: 0
@@ -1572,7 +1586,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8cfed0c546bf9e469f3765352165944, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RewardedAdButton: {fileID: 532862836}
+  RewardedAdButton: {fileID: 532862839}
   GameStartButton: {fileID: 74057168}
   GameCompleteButton: {fileID: 96143052}
   GameQuitButton: {fileID: 607308234}

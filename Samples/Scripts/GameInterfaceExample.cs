@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 public class GameInterfaceExample : MonoBehaviour
 {
-    [SerializeField] private Button RewardedAdButton;
+    [SerializeField] private RewardedAdButton RewardedAdButton;
     [SerializeField] private Button GameStartButton;
     [SerializeField] private Button GameCompleteButton;
     [SerializeField] private Button GameQuitButton;
@@ -44,15 +44,16 @@ public class GameInterfaceExample : MonoBehaviour
         Debug.Log("[GI Tester] Current language: " + GameInterface.Instance.GetCurrentLanguage());
         Debug.Log("[GI Tester] Hidden state: " + (GameInterface.Instance.IsHidden() ? "Hidden" : "Visible"));
 
-        RewardedAdButton.gameObject.SetActive(GameInterface.Instance.HasFeature("rewarded"));
         BuyProductButton.gameObject.SetActive(GameInterface.Instance.HasFeature("iap"));
         Version.SetActive(GameInterface.Instance.HasFeature("version"));
         Copyright.SetActive(GameInterface.Instance.HasFeature("copyright"));
+
+        RewardedAdButton.OnRewardGranted += HandleRewardGranted;
+        RewardedAdButton.OnRewardDeclined += HandleRewardDeclined;
     }
 
     public void OnEnable()
     {
-        HandleRewardedAdAvailabilityChange(null, null);
         CheckGameButtonState();
         HandleOffsetChange(GameInterface.Instance.GetOffsets());
 
@@ -68,8 +69,6 @@ public class GameInterfaceExample : MonoBehaviour
 
         GameInterface.Instance.OnPauseStateChange += HandlePauseStateChange;
         GameInterface.Instance.OnMuteStateChange += HandleMuteStateChange;
-
-        GameInterface.Instance.OnRewardedAdAvailabilityChange += HandleRewardedAdAvailabilityChange;
 
         GameInterface.Instance.OnOffsetChange += HandleOffsetChange;
 
@@ -92,12 +91,12 @@ public class GameInterfaceExample : MonoBehaviour
         GameInterface.Instance.OnPauseStateChange -= HandlePauseStateChange;
         GameInterface.Instance.OnMuteStateChange -= HandleMuteStateChange;
 
-        GameInterface.Instance.OnRewardedAdAvailabilityChange -= HandleRewardedAdAvailabilityChange;
-
         GameInterface.Instance.OnOffsetChange -= HandleOffsetChange;
 
         GameInterface.Instance.OnIAPEvent -= HandleIAPEvent;
+        GameInterface.Instance.OnVisibilityChange -= HandleVisibilityChange;
     }
+
     private void HandleGoToHome()
     {
         ToastManager.Instance.ShowToast("[GI Tester] OnGoToHome event received");
@@ -136,11 +135,6 @@ public class GameInterfaceExample : MonoBehaviour
     private void HandleMuteStateChange(bool isMuted)
     {
         ToastManager.Instance.ShowToast("[GI Tester] OnMuteStateChange event received: " + (isMuted ? "Muted" : "Unmuted"));
-    }
-
-    private void HandleRewardedAdAvailabilityChange(string? eventId, bool? hasRewardedAd)
-    {
-        RewardedAdButton.interactable = GameInterface.Instance.IsRewardedAdAvailable("test_event");
     }
 
     private void HandleOffsetChange(OffsetResult offsetResult)
@@ -198,6 +192,16 @@ public class GameInterfaceExample : MonoBehaviour
         ToastManager.Instance.ShowToast("[GI Tester] OnVisibilityChange event received: " + (isHidden ? "Hidden" : "Visible"));
     }
 
+    private void HandleRewardGranted()
+    {
+        ToastManager.Instance.ShowToast("[GI Tester] Reward granted");
+    }
+
+    private void HandleRewardDeclined()
+    {
+        ToastManager.Instance.ShowToast("[GI Tester] Reward declined");
+    }
+
     public async void ShowRewardedAd()
     {
         try
@@ -223,7 +227,7 @@ public class GameInterfaceExample : MonoBehaviour
         starting = true;
         CheckGameButtonState();
 
-        await GameInterface.Instance.ShowInterstitialAd("button:menu:start");
+        await GameInterface.Instance.ShowInterstitialAd("button:menu:start", "start");
         ToastManager.Instance.ShowToast("[GI Tester] Interstitial Ad shown before GameStart");
         await GameInterface.Instance.GameStart(1);
         ToastManager.Instance.ShowToast("[GI Tester] GameStart callback executed for level 1");
