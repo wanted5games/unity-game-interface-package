@@ -5,7 +5,7 @@
   "description": "Plugin to easily integrate GameInterface API into Unity projects.\nCheck out Packages/Game Interface/Samples for a test scene, where features can be tested.\nAlso check out the GameInterfaceExample.cs script to see example usage.\nFor more information about the API, visit https://famobi.atlassian.net/wiki/spaces/GI1/pages/1982332934/TL+DR",
   "unity": "2022.3",
   "documentationUrl": "https://famobi.atlassian.net/wiki/spaces/GI1/pages/1982332934/TL+DR",
-  "changelogUrl": "https://github.com/famobi/game-interface/blob/main/CHANGELOG.md",
+  "changelogUrl": "https://github.com/wanted5games/game-interface/blob/main/CHANGELOG.md",
   "author": {
     "name": "Famobi",
     "email": "your.email@example.com",

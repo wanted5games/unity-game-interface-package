@@ -51,7 +51,7 @@ You can install the Game Interface package directly from Git using [Unity’s Pa
 3. Select **Add package from git URL** and paste the following URL:
 
 ```
-https://github.com/.....
+https://github.com/wanted5games/unity-game-interface-package.git
 ```
 
 ## Usage
