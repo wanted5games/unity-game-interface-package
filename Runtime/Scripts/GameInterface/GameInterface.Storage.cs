@@ -3,8 +3,26 @@ using System;
 
 public partial class GameInterface
 {
+    public int MaxStorageItemBytes { get; set; } = 100 * 1024; // 100 KB
+
+    private int GetUtf8ByteCount(string value)
+    {
+        if (string.IsNullOrEmpty(value)) return 0;
+        return System.Text.Encoding.UTF8.GetByteCount(value);
+    }
+
+    private void CheckStorageSize(string key, string serializedValue)
+    {
+        int size = GetUtf8ByteCount(serializedValue);
+        if (size > MaxStorageItemBytes)
+        {
+            Debug.LogWarning($"[GI] Storage: value for key '{key}' is {size} bytes, exceeding limit {MaxStorageItemBytes} bytes. Write skipped.");
+        }
+    }
     public void SetStorageItem(string key, string value)
     {
+        CheckStorageSize(key, value ?? "");
+
 #if UNITY_WEBGL && !UNITY_EDITOR
         GameInterfaceBridge.SetStorageItem(key, value);
 #else
@@ -20,11 +38,11 @@ public partial class GameInterface
 
     public void SetStorageItem<T>(string key, T value)
     {
-#if UNITY_WEBGL && !UNITY_EDITOR
         string json = JsonUtility.ToJson(value);
+
+#if UNITY_WEBGL && !UNITY_EDITOR
         GameInterfaceBridge.SetStorageItem(key, json);
 #else
-        string json = JsonUtility.ToJson(value);
         PlayerPrefs.SetString(key, json);
         PlayerPrefs.Save();
 #endif
