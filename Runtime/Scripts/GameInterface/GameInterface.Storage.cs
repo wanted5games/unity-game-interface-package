@@ -1,9 +1,18 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 public partial class GameInterface
 {
-    public int MaxStorageItemBytes { get; set; } = 100 * 1024; // 100 KB
+    public int MaxStorageItemBytes { get; set; } = 1024 * 1024; // 1 MB
+    public int MaxTotalStorageBytes { get; set; } = 1024 * 1024; // 1 MB
+
+    private readonly Dictionary<string, string> _storageCache = new Dictionary<string, string>();
+    
+    private readonly HashSet<string> _warnedIndividualOverLimit = new HashSet<string>();
+    private readonly HashSet<string> _warnedIndividual50Percent = new HashSet<string>();
+    private readonly HashSet<string> _warnedTotalOverLimit = new HashSet<string>();
+    private readonly HashSet<string> _warnedTotal50Percent = new HashSet<string>();
 
     private int GetUtf8ByteCount(string value)
     {
@@ -14,11 +23,51 @@ public partial class GameInterface
     private void CheckStorageSize(string key, string serializedValue)
     {
         int size = GetUtf8ByteCount(serializedValue);
-        if (size > MaxStorageItemBytes)
+
+        int halfLimit = MaxStorageItemBytes / 2;
+           
+        if (size >= halfLimit && !_warnedIndividual50Percent.Contains(key))
         {
-            Debug.LogWarning($"[GI] Storage: value for key '{key}' is {size} bytes, exceeding limit {MaxStorageItemBytes} bytes. Write skipped.");
+            Debug.LogWarning($"[GI] Storage: value for key '{key}' is {size} bytes ({size * 100.0f / MaxStorageItemBytes:F1}% of limit).");
+            _warnedIndividual50Percent.Add(key);
+        }
+        
+        if (size > MaxStorageItemBytes && !_warnedIndividualOverLimit.Contains(key))
+        {
+            Debug.LogError($"[GI] Storage: value for key '{key}' is {size} bytes, exceeding limit {MaxStorageItemBytes} bytes.");
+            _warnedIndividualOverLimit.Add(key);
+        }
+
+        int currentTotal = 0;
+        int oldValueSize = 0;
+        
+        foreach (var kvp in _storageCache)
+        {
+            int itemSize = GetUtf8ByteCount(kvp.Key) + GetUtf8ByteCount(kvp.Value);
+            currentTotal += itemSize;
+            
+            if (kvp.Key == key)
+            {
+                oldValueSize = GetUtf8ByteCount(kvp.Value);
+            }
+        }
+
+        int projectedTotal = currentTotal - oldValueSize + size;
+        int halfTotalLimit = MaxTotalStorageBytes / 2;
+      
+        if (projectedTotal >= halfTotalLimit && !_warnedTotal50Percent.Contains(key))
+        {
+            Debug.LogWarning($"[GI] Storage: projected total size for key '{key}' would be {projectedTotal} bytes ({projectedTotal * 100.0f / MaxTotalStorageBytes:F1}% of limit).");
+            _warnedTotal50Percent.Add(key);
+        }
+      
+        if (projectedTotal > MaxTotalStorageBytes && !_warnedTotalOverLimit.Contains(key))
+        {
+            Debug.LogError($"[GI] Storage: projected total size would be {projectedTotal} bytes, exceeding limit {MaxTotalStorageBytes} bytes.");
+            _warnedTotalOverLimit.Add(key);
         }
     }
+
     public void SetStorageItem(string key, string value)
     {
         CheckStorageSize(key, value ?? "");
@@ -29,6 +78,7 @@ public partial class GameInterface
         PlayerPrefs.SetString(key, value);
         PlayerPrefs.Save();
 #endif
+        _storageCache[key] = value ?? string.Empty;
     }
 
     public void SetStorageItem(string key, int value) => SetStorageItem(key, value.ToString());
@@ -39,6 +89,7 @@ public partial class GameInterface
     public void SetStorageItem<T>(string key, T value)
     {
         string json = JsonUtility.ToJson(value);
+        CheckStorageSize(key, json ?? "");
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         GameInterfaceBridge.SetStorageItem(key, json);
@@ -46,16 +97,21 @@ public partial class GameInterface
         PlayerPrefs.SetString(key, json);
         PlayerPrefs.Save();
 #endif
+        _storageCache[key] = json ?? string.Empty;
     }
 
-    // ---- GET STORAGE (Generic) ----
     public T GetStorageItem<T>(string key)
     {
+        string stored;
+        if (!_storageCache.TryGetValue(key, out stored))
+        {
 #if UNITY_WEBGL && !UNITY_EDITOR
-        string stored = GameInterfaceBridge.GetStorageItem(key);
+            stored = GameInterfaceBridge.GetStorageItem(key);
 #else
-        string stored = PlayerPrefs.GetString(key, null);
+            stored = PlayerPrefs.GetString(key, null);
 #endif
+            _storageCache[key] = stored ?? string.Empty;
+        }
         Type targetType = typeof(T);
 
         if (string.IsNullOrEmpty(stored))
@@ -80,7 +136,6 @@ public partial class GameInterface
             if (targetType == typeof(bool) && bool.TryParse(stored, out bool boolVal))
                 return (T)(object)boolVal;
 
-            // For objects, deserialize from JSON
             Debug.Log($"Deserializing storage item '{key}': {stored}");
             return JsonUtility.FromJson<T>(stored);
         }
@@ -104,6 +159,12 @@ public partial class GameInterface
         PlayerPrefs.DeleteKey(key);
         PlayerPrefs.Save();
 #endif
+        if (_storageCache.ContainsKey(key)) _storageCache.Remove(key);
+        
+        _warnedIndividualOverLimit.Remove(key);
+        _warnedIndividual50Percent.Remove(key);
+        _warnedTotalOverLimit.Remove(key);
+        _warnedTotal50Percent.Remove(key);
     }
 
     public void ClearStorage()
@@ -114,5 +175,11 @@ public partial class GameInterface
         PlayerPrefs.DeleteAll();
         PlayerPrefs.Save();
 #endif
+        _storageCache.Clear();
+        
+        _warnedIndividualOverLimit.Clear();
+        _warnedIndividual50Percent.Clear();
+        _warnedTotalOverLimit.Clear();
+        _warnedTotal50Percent.Clear();
     }
 }

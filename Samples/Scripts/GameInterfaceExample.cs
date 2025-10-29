@@ -320,7 +320,7 @@ public class GameInterfaceExample : MonoBehaviour
 
     public void SavePlayerData()
     {
-        GameInterface.Instance.SetStorageItem("string", RandomString(10));
+        GameInterface.Instance.SetStorageItem("string", RandomString(100));
         GameInterface.Instance.SetStorageItem("int", UnityEngine.Random.Range(1, 100));
         GameInterface.Instance.SetStorageItem("bool", UnityEngine.Random.value > 0.5f);
         GameInterface.Instance.SetStorageItem("float", UnityEngine.Random.Range(1f, 100f));
