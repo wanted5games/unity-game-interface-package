@@ -22,7 +22,14 @@ public class GameInterfaceTesterWindow : EditorWindow
 
         string path = !string.IsNullOrEmpty(guid)
             ? AssetDatabase.GUIDToAssetPath(guid) : PREF_PATH;
+
         settings = AssetDatabase.LoadAssetAtPath<GameInterfaceTester>(path);
+
+        if (settings == null && path != PREF_PATH) {
+            path = PREF_PATH;
+            settings = AssetDatabase.LoadAssetAtPath<GameInterfaceTester>(path);
+        }
+
         if (settings)
             serializedSettings = new SerializedObject(settings);
     }
@@ -34,8 +41,7 @@ public class GameInterfaceTesterWindow : EditorWindow
 
         EditorGUILayout.LabelField("Game Interface Tester", EditorStyles.boldLabel);
 
-        string _guid = EditorPrefs.GetString(PREF_KEY, "");
-        string _path = AssetDatabase.GUIDToAssetPath(_guid);
+        string _path = settings ? AssetDatabase.GetAssetPath(settings) : "";
 
         if (string.IsNullOrEmpty(_path))
             _path = "No asset assigned.";

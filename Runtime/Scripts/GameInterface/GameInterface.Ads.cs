@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
+using System.IO;
+using System.Collections.Generic;
 
 public partial class GameInterface
 {
@@ -50,6 +52,7 @@ public partial class GameInterface
     /// <returns></returns>
     public Task ShowInterstitialAd(string eventId, string placementType = "", Action onAdClosed = null, Action<string> onAdFailed = null)
     {
+        CheckIfInterstitialEventExists(eventId);
         return ExecuteWebGLRequest(id => GameInterfaceBridge.ShowInterstitialAd(id, eventId, placementType), onAdClosed, onAdFailed);
     }
 
@@ -62,6 +65,7 @@ public partial class GameInterface
     /// <exception cref="Exception"></exception>
     public Task<RewardedAdResult> ShowRewardedAd(string eventId, Action<RewardedAdResult> onAdClosed = null, Action<string> onAdFailed = null)
     {
+        CheckIfRewardedEventExists(eventId);
         return ExecuteWebGLRequest<RewardedAdResult>(id => GameInterfaceBridge.ShowRewardedAd(id, eventId), onAdClosed, onAdFailed);
     }
 
@@ -73,6 +77,7 @@ public partial class GameInterface
     /// <returns></returns>
     public Task<bool> HasRewardedAd(string eventId, Action<bool> onResult = null, Action<string> onError = null)
     {
+        CheckIfRewardedEventExists(eventId);
         return ExecuteWebGLRequest<bool>(id => GameInterfaceBridge.HasRewardedAd(id, eventId), onResult, onError);
     }
 
@@ -84,6 +89,7 @@ public partial class GameInterface
     /// <returns></returns>
     public bool IsRewardedAdAvailable(string eventId)
     {
+        CheckIfRewardedEventExists(eventId);
 #if UNITY_WEBGL && !UNITY_EDITOR
         return GameInterfaceBridge.IsRewardedAdAvailable(eventId);
 #else
@@ -111,12 +117,69 @@ public partial class GameInterface
             bottom = 0
         };
 #else
-        return tester ? tester.offsets : new OffsetResult {
+        return tester ? tester.offsets : new OffsetResult
+        {
             left = 0,
             right = 0,
             top = 0,
             bottom = 0
         };
+#endif
+    }
+
+    private void CheckIfRewardedEventExists(string eventId)
+    {
+#if UNITY_EDITOR
+        if (string.IsNullOrEmpty(eventId))
+        {
+            Debug.LogError($"[GI] Rewarded event ID is null or empty");
+            return;
+        }
+
+        string path = Path.Combine(Application.dataPath, "WebGLTemplates/GameInterface/famobi.json");
+
+        if (!File.Exists(path))
+        {
+            Debug.LogError($"[GI] famobi.json not found");
+            return;
+        }
+
+        string json = File.ReadAllText(path);
+        var data = JsonUtility.FromJson<GameInterfaceData>(json);
+        if (data.rewarded.eventIds.Contains(eventId))
+        {
+            return;
+        }
+
+        Debug.LogError($"[GI] Rewarded event {eventId} not found in famobi.json");
+#endif
+    }
+
+    private void CheckIfInterstitialEventExists(string eventId)
+    {
+#if UNITY_EDITOR
+        if (string.IsNullOrEmpty(eventId))
+        {
+            Debug.LogError($"[GI] Interstitial event ID is null or empty");
+            return;
+        }
+
+        string path = Path.Combine(Application.dataPath, "WebGLTemplates/GameInterface/famobi.json");
+
+        if (!File.Exists(path))
+        {
+            Debug.LogError($"[GI] famobi.json not found");
+            return;
+        }
+
+        string json = File.ReadAllText(path);
+        var data = JsonUtility.FromJson<GameInterfaceData>(json);
+        if (data.interstitial.eventIds.Contains(eventId))
+        {
+            return;
+        }
+
+        Debug.LogError($"[GI] Interstitial event {eventId} not found in famobi.json");
 #endif
     }
 }
@@ -133,4 +196,27 @@ public class OffsetResult
     public float right;
     public float top;
     public float bottom;
+}
+
+[Serializable]
+public class GameInterfaceData
+{
+    public InterstitialData interstitial;
+    public RewardedData rewarded;
+}
+
+[Serializable]
+public class InterstitialData
+{
+    public List<string> eventIds;
+    public List<string> allowlist;
+    public List<string> blocklist;
+}
+
+[Serializable]
+public class RewardedData
+{
+    public List<string> eventIds;
+    public List<string> allowlist;
+    public List<string> blocklist;
 }

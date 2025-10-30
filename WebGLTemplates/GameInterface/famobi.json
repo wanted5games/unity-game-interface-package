@@ -1,11 +1,11 @@
 {
   "interstitial": {
-    "eventIds": [],
+    "eventIds": ["test_event"],
     "allowlist": ["*"],
     "blocklist": []
   },
   "rewarded": {
-    "eventIds": [],
+    "eventIds": ["test_event"],
     "allowlist": ["*"],
     "blocklist": []
   }
