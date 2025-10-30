@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public partial class GameInterface
 {
@@ -15,6 +16,23 @@ public partial class GameInterface
     public void InvokeOnMuteStateChange()
     {
         OnMuteStateChange?.Invoke(IsMuted());
+    }
+
+    public void AddMuteStateChangeHandler()
+    {
+        OnMuteStateChange += (isMuted) =>
+        {
+            Debug.Log($"[GI] Mute state changed to {isMuted}");
+
+            if (isMuted)
+            {
+                AudioListener.volume = 0;
+            }
+            else
+            {
+                AudioListener.volume = 1;
+            }
+        };
     }
 
     /// <summary>

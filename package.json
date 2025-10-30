@@ -7,8 +7,8 @@
   "documentationUrl": "https://famobi.atlassian.net/wiki/spaces/GI1/pages/1982332934/TL+DR",
   "changelogUrl": "https://github.com/wanted5games/game-interface/blob/main/CHANGELOG.md",
   "author": {
-    "name": "Famobi",
-    "email": "your.email@example.com",
+    "name": "Famobi GmbH",
+    "email": "info@famobi.com",
     "url": "https://famobi.com/"
   },
   "dependencies": {}

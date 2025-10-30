@@ -57,6 +57,10 @@ public class GameInterfaceExample : MonoBehaviour
         CheckGameButtonState();
         HandleOffsetChange(GameInterface.Instance.GetOffsets());
 
+        GameInterface.Instance.AddPauseStateChangeHandler();
+        GameInterface.Instance.AddMuteStateChangeHandler();
+
+
         if (GameInterface.Instance == null)
             return;
 

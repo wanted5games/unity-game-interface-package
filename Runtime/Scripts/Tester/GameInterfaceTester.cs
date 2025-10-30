@@ -66,13 +66,25 @@ public partial class GameInterfaceTester : ScriptableObject
     public bool HasFeature(string featureName)
     {
 #if UNITY_EDITOR
-        foreach (var f in features)
+        switch (featureName)
         {
-            if (f.name == featureName)
-                return f.enabled;
+            case "audio": return audio;
+            case "copyright": return copyright;
+            case "credits": return credits;
+            case "iap": return iap;
+            case "pause": return pause;
+            case "privacy": return privacy;
+            case "progress": return progress;
+            case "rewarded": return rewarded;
+            case "score": return score;
+            case "tutorial": return tutorial;
+            case "version": return version;
+            case "visibilitychange": return visibilitychange;
+            default: return false;
         }
-#endif
+#else
         return false;
+#endif
     }
 
     // ---------- Context Menu Methods ----------
@@ -103,29 +115,18 @@ public partial class GameInterfaceTester : ScriptableObject
 /// </summary>
 public partial class GameInterfaceTester
 {
-    [System.Serializable]
-    public class FeatureToggle
-    {
-        public string name;
-        public bool enabled;
-    }
-
-public FeatureToggle[] features = new FeatureToggle[]
-{
-    new FeatureToggle { name = "audio", enabled = true },
-    new FeatureToggle { name = "copyright", enabled = true },
-    new FeatureToggle { name = "credits", enabled = true },
-    new FeatureToggle { name = "iap", enabled = true },
-    new FeatureToggle { name = "pause", enabled = true },
-    new FeatureToggle { name = "privacy", enabled = true },
-    new FeatureToggle { name = "progress", enabled = true },
-    new FeatureToggle { name = "rewarded", enabled = true },
-    new FeatureToggle { name = "score", enabled = true },
-    new FeatureToggle { name = "tutorial", enabled = true },
-    new FeatureToggle { name = "version", enabled = true },
-    new FeatureToggle { name = "visibilitychange", enabled = true }
-
-};
+    [SerializeField] private bool audio = true;
+    [SerializeField] private bool copyright = true;
+    [SerializeField] private bool credits = true;
+    [SerializeField] private bool iap = true;
+    [SerializeField] private bool pause = true;
+    [SerializeField] private bool privacy = true;
+    [SerializeField] private bool progress = true;
+    [SerializeField] private bool rewarded = true;
+    [SerializeField] private bool score = true;
+    [SerializeField] private bool tutorial = true;
+    [SerializeField] private bool version = true;
+    [SerializeField] private bool visibilitychange = true;
 
     // Change detection dictionaries (editor only)
     private Dictionary<string, object> previousValues = new Dictionary<string, object>();

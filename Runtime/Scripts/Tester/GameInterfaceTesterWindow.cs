@@ -14,6 +14,7 @@ public class GameInterfaceTesterWindow : EditorWindow
     private GameInterfaceTester settings;
     private SerializedObject serializedSettings;
     private Vector2 scrollPos;
+    private bool featuresFoldout = true;
 
     private void OnEnable()
     {
@@ -81,7 +82,26 @@ public class GameInterfaceTesterWindow : EditorWindow
         {
             serializedSettings.Update();
 
-            EditorGUILayout.PropertyField(serializedSettings.FindProperty("features"), true);
+            // Features foldout: draw new individual feature toggles
+            featuresFoldout = EditorGUILayout.Foldout(featuresFoldout, "Features", true);
+            if (featuresFoldout)
+            {
+                EditorGUI.indentLevel++;
+                DrawFeatureToggle(serializedSettings, "audio", "Audio");
+                DrawFeatureToggle(serializedSettings, "copyright", "Copyright");
+                DrawFeatureToggle(serializedSettings, "credits", "Credits");
+                DrawFeatureToggle(serializedSettings, "iap", "IAP");
+                DrawFeatureToggle(serializedSettings, "pause", "Pause");
+                DrawFeatureToggle(serializedSettings, "privacy", "Privacy");
+                DrawFeatureToggle(serializedSettings, "progress", "Progress");
+                DrawFeatureToggle(serializedSettings, "rewarded", "Rewarded");
+                DrawFeatureToggle(serializedSettings, "score", "Score");
+                DrawFeatureToggle(serializedSettings, "tutorial", "Tutorial");
+                DrawFeatureToggle(serializedSettings, "version", "Version");
+                DrawFeatureToggle(serializedSettings, "visibilitychange", "Visibility Change");
+                EditorGUI.indentLevel--;
+                EditorGUILayout.Space();
+            }
             EditorGUILayout.PropertyField(serializedSettings.FindProperty("_rewardedAdAvailable"), new GUIContent("Rewarded Ad Available"));
             EditorGUILayout.PropertyField(serializedSettings.FindProperty("_isRewardGranted"), new GUIContent("Is Reward Granted"));
             EditorGUILayout.PropertyField(serializedSettings.FindProperty("_isMuted"), new GUIContent("Is Muted"));
@@ -104,6 +124,15 @@ public class GameInterfaceTesterWindow : EditorWindow
         DrawButtons(settings);
 
         EditorGUILayout.EndScrollView();
+    }
+
+    private void DrawFeatureToggle(SerializedObject so, string propertyName, string label)
+    {
+        SerializedProperty prop = so.FindProperty(propertyName);
+        if (prop != null)
+        {
+            EditorGUILayout.PropertyField(prop, new GUIContent(label));
+        }
     }
 
     private void DrawButtons(GameInterfaceTester target)

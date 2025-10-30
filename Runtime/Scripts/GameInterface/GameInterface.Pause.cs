@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public partial class GameInterface
 {
@@ -14,6 +15,22 @@ public partial class GameInterface
     public void InvokeOnPauseStateChange()
     {
         OnPauseStateChange?.Invoke(IsPaused());
+    }
+
+    public void AddPauseStateChangeHandler()
+    {
+        OnPauseStateChange += (isPaused) =>
+        {
+            Debug.Log($"[GI] Pause state changed to {isPaused}");
+            if (isPaused)
+            {
+                Time.timeScale = 0;
+            }
+            else
+            {
+                Time.timeScale = 1;
+            }
+        };
     }
 
     /// <summary>
