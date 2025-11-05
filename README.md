@@ -11,7 +11,9 @@
     - [Async/Await](#asyncawait)
     - [Coroutines](#coroutines)
   - [Events Handling](#events-handling)
-  - [New Features](#new-features)
+  - [famobi.json](#famobi.json)
+  - [Additional Features](#additional-features)
+  - [Storage](#storage)
 - [Runtime testing](#runtime-testing)
 - [Samples](#samples)
 - [Build](#build)
@@ -56,9 +58,7 @@ https://github.com/wanted5games/unity-game-interface-package.git
 
 ## Usage
 
-All API calls are accessible via the `GameInterface` singleton instance.
-The documentation of GameInterface can be found [here](https://famobi.atlassian.net/wiki/spaces/GI1/pages/1982332934/TL+DR). Please read this thoroughly.
-This singleton mirrors the JavaScript API described in the documentation as closely as possible.
+All API calls are accessible via the `GameInterface` singleton instance. This singleton mirrors the JavaScript API described in the [TL;DR documentation](https://famobi.atlassian.net/wiki/spaces/GI1/pages/1982332934/TL+DR) as closely as possible.
 
 ```C#
 GameInterface.Instance.GameReady();
@@ -66,52 +66,75 @@ GameInterface.Instance.GameReady();
 
 ### Promises
 
-In JavaScript we use [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) to execute asynchronous code. Promises don't exist in Unity, but there are similar features existing in C#. It can be implemented in 3 ways:
+In JavaScript we use [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) to execute asynchronous code. Promises don't exist in Unity, but similar features exist in C#. They can be implemented in 3 ways:
 
 #### Callback
 
-Simplest approach — pass a callback function to handle the result once completed.
+Simplest approach — pass a callback function to handle the result once completed. You can also provide an error callback to handle failures.
 
 ```C#
 public void ShowRewardedAd()
 {
-    GameInterface.Instance.ShowRewardedAd("test_event", (result) =>
-    {
-        if (result.isRewardGranted)
+    GameInterface.Instance.ShowRewardedAd("test_event",
+        (result) =>
         {
-            // Reward the player.
-        }
-    });
+            if (result.isRewardGranted)
+            {
+                // Reward the player.
+            }
+        },
+        (error) =>
+        {
+            Debug.LogError($"Ad failed to show: {error}");
+            // Handle error (e.g., show a message to the player)
+        });
 }
 ```
 
 #### Async/await
 
-In Unity we can make use of [async/await](https://docs.unity3d.com/6000.2/Documentation/Manual/async-await-support.html).
+In Unity we can make use of [async/await](https://docs.unity3d.com/6000.2/Documentation/Manual/async-await-support.html). Use try-catch to handle errors.
 
 ```C#
 public async void ShowRewardedAd()
 {
-    var result = await GameInterface.Instance.ShowRewardedAd("test_event");
-
-    if (result.isRewardGranted)
+    try
     {
-        // Reward the player.
+        var result = await GameInterface.Instance.ShowRewardedAd("test_event");
+
+        if (result.isRewardGranted)
+        {
+            // Reward the player.
+        }
+    }
+    catch (Exception e)
+    {
+        Debug.LogError($"Ad failed to show: {e.Message}");
+        // Handle error
     }
 }
 ```
 
 #### Coroutines
 
-You can also wait for asynchronous operations inside a coroutine.
+You can also wait for asynchronous operations inside a coroutine. The `TaskExtensions` class (provided by this package) converts Tasks to Coroutines.
 
 ```C#
+using System.Collections;
+
 private IEnumerator ShowRewardedAdCoroutine()
 {
     Task<RewardedAdResult> task = GameInterface.Instance.ShowRewardedAd("test_event");
     yield return TaskExtensions.WaitForTask(task);
-    var result = task.Result;
 
+    if (task.IsFaulted)
+    {
+        Debug.LogError($"Ad failed to show: {task.Exception?.GetBaseException().Message}");
+        // Handle error
+        yield break;
+    }
+
+    var result = task.Result;
     if (result.isRewardGranted)
     {
         // Reward the player.
@@ -140,7 +163,24 @@ public void OnDisable()
 
 ⚠️ Always unsubscribe from events in OnDisable to prevent memory leaks.
 
-### New features
+### famobi.json
+
+The `famobi.json` file is required for your game and must be located in the WebGL template folder (`Assets/WebGLTemplates/GameInterface/famobi.json`). This file lists all ad eventIds and IAP products used in your game.
+
+**Instead of editing the JSON file directly**, you can use the **Famobi.json Editor** window:
+
+1. Open **Game Interface ▸ Famobi.json Editor** from the Unity menu bar
+2. Edit your ad eventIds (interstitial and rewarded)
+3. Edit your IAP products (SKU, title, description, image URI, price)
+
+![FamobiJSONEditorWindow](Documentation/FamobiJsonEditorWindow.png)
+
+⚠️ **Important**:
+
+- All eventIds used in your game must be listed in this file. See the [TL;DR documentation](https://famobi.atlassian.net/wiki/spaces/GI1/pages/1982332934/TL+DR) (ADS-008) for details.
+- IAP products defined in `famobi.json` are automatically loaded and merged with API results when calling `GetIAPProducts()`. Products are shuffled for each call.
+
+### Additional Features
 
 The following new methods have been added to the `GameInterface` API to improve flexibility and control over runtime behavior:
 
@@ -153,6 +193,27 @@ GameInterface.Instance.InitVisibilityChange();
 
 // Resize the game canvas, applying the offset for the banner.
 GameInterface.Instance.ResizeGameCanvas();
+```
+
+### Storage
+
+The `GameInterface` storage system replaces Unity's `PlayerPrefs` and provides:
+
+- **Automatic caching**: Storage reads are cached in memory to reduce overhead
+- **Size monitoring**: Warnings are logged when individual items or total storage size approach limits (default: 1 MB each)
+- **Configurable limits**: Adjust `GameInterface.Instance.MaxStorageItemBytes` and `MaxTotalStorageBytes` if needed
+
+```C#
+// Store data (automatically cached)
+GameInterface.Instance.SetStorageItem("playerName", "Player1");
+GameInterface.Instance.SetStorageItem("highScore", 1000);
+
+// Retrieve data (uses cache if available)
+string name = GameInterface.Instance.GetStorageItem<string>("playerName");
+int score = GameInterface.Instance.GetStorageItem<int>("highScore");
+
+// Clear storage
+GameInterface.Instance.ClearStorage();
 ```
 
 ## Runtime testing
@@ -179,13 +240,13 @@ These demonstrate how to use the Game Interface API and test event hooks during 
 
 ## Build
 
-When importing this package, a new folder named Game Interface is automatically generated in your project’s Assets/ directory.
+When importing this package, a new folder named **Game Interface** is automatically generated in your project's `Assets/` directory.
 This folder contains a required WebGL Template used for proper integration with the JavaScript API.
-If the folder was not created automatically, copy it manually from: `Packages/Game Interface/WebGLTemplates`
+If the folder was not created automatically, copy it manually from: `Packages/com.famobi.game-interface/WebGLTemplates/GameInterface` to `Assets/WebGLTemplates/GameInterface`.
 
 ### WebGL Template
 
-Before making a build, make sure that you have selected the WebGLTemplate in the PlayerSettings
+Before making a build, make sure that you have selected the WebGL Template in the Player Settings.
 
 Before building your WebGL project:
 
@@ -199,7 +260,7 @@ Select the WebGL Template created by the package.
 
 ### Custom Splash Screen
 
-The Game Interface splash screen is a custom HTML/CSS page that displays when the game first loads. You can edit it to match your game’s branding, but avoid removing required JavaScript hooks. You can edit it in the file `index.html`.
+The Game Interface splash screen is a custom HTML/CSS page that displays when the game first loads. You can edit it to match your game's branding, but avoid removing required JavaScript hooks. The splash screen can be found in `Assets/WebGLTemplates/GameInterface/index.html` (created automatically when the package is imported).
 
 ### Post Build Validator
 

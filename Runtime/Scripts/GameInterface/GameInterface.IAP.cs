@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using UnityEngine;
+using System.Collections.Generic;
 
 public partial class GameInterface
 {
@@ -17,13 +19,35 @@ public partial class GameInterface
     /// <returns></returns>
     public Task<IAPProduct[]> GetIAPProducts(Action<IAPProduct[]> onComplete = null)
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
         return ExecuteWebGLRequest<IAPProduct[]>(id => GameInterfaceBridge.GetIAPProducts(id), onComplete);
-    }
+#else
+        GameInterfaceData data = FetchFamobiJson();
+        IAPProduct[] products = data.iap.products.ToArray();
 
+        for (int i = products.Length - 1; i > 0; i--)
+        {
+            int j = UnityEngine.Random.Range(0, i + 1);
+            (products[i], products[j]) = (products[j], products[i]);
+        }
+
+        onComplete?.Invoke(products);
+        return Task.FromResult(products);
+#endif
+    }
 
     public Task<PurchaseResult> BuyProduct(string sku, Action<PurchaseResult> onComplete = null)
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
         return ExecuteWebGLRequest<PurchaseResult>(id => GameInterfaceBridge.BuyIAPProduct(id, sku), onComplete);
+#else
+
+        PurchaseResult result = new PurchaseResult { detail = new PurchaseDetail { sku = sku, purchase = "test_purchase" } };
+     
+        OnIAPEvent?.Invoke(new IAPEvent { type = "PURCHASE_SUCCESS_EVENT", detail = result.detail });
+        onComplete?.Invoke(result);
+        return Task.FromResult(result);
+#endif
     }
 
     public Task<ConsumeResult> ConsumeProduct(string transactionId, Action<ConsumeResult> onComplete = null)
@@ -71,8 +95,15 @@ public class ConsumeResult
     public string message;
 }
 
+[Serializable]
 public class IAPEvent
 {
     public string type;
     public PurchaseDetail detail;
+}
+
+[Serializable]
+public class IAPData
+{
+    public List<IAPProduct> products;
 }

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using System.IO;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -293,6 +295,13 @@ public partial class GameInterface
 #endif
         InitAds();
     }
+
+    private GameInterfaceData FetchFamobiJson()
+    {
+        string path = Path.Combine(Application.dataPath, "WebGLTemplates/GameInterface/famobi.json");
+        string json = File.ReadAllText(path);
+        return JsonUtility.FromJson<GameInterfaceData>(json);
+    }
 }
 
 
@@ -385,5 +394,13 @@ public class GameInterfaceGameObject : MonoBehaviour
     {
         Debug.Log("[GI] ResolveAction called with json: " + json);
         GameInterface.Instance.ResolveAction(json);
-    }   
+    }
+}
+
+[Serializable]
+public class GameInterfaceData
+{
+    public InterstitialData interstitial;
+    public RewardedData rewarded;
+    public IAPData iap;
 }

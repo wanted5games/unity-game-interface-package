@@ -3,11 +3,18 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 
 [InitializeOnLoad]
 public static class WebGLTemplateInstaller
 {
     private const string templateFolderName = "GameInterface";
+    
+    // List of files that should trigger a copy when changed
+    private static readonly string[] trackedFiles = new string[]
+    {
+        "thumbnail.png"
+    };
 
     static WebGLTemplateInstaller()
     {
@@ -32,53 +39,56 @@ public static class WebGLTemplateInstaller
             Directory.CreateDirectory(parentFolder);
         }
 
-        // Only copy if anything changed
-        if (!Directory.Exists(destinationPath) || !FoldersAreEqual(packagePath, destinationPath))
+        // If destination doesn't exist, copy entire folder
+        if (!Directory.Exists(destinationPath))
         {
-            // Delete old folder if exists
-            if (Directory.Exists(destinationPath))
-            {
-                FileUtil.DeleteFileOrDirectory(destinationPath);
-                FileUtil.DeleteFileOrDirectory(destinationPath + ".meta");
-            }
-
-            // Copy folder
             FileUtil.CopyFileOrDirectory(packagePath, destinationPath);
             AssetDatabase.Refresh();
-            Debug.Log($"[Game Interface] WebGL template installed/updated: {templateFolderName}");
+            Debug.Log($"[Game Interface] WebGL template installed: {templateFolderName}");
+            return;
         }
 
-    }
-
-    private static bool FoldersAreEqual(string folder1, string folder2)
-    {
-        var files1 = Directory.GetFiles(folder1, "*", SearchOption.AllDirectories)
-            .Where(f => !f.EndsWith(".meta"))
-            .Select(f => f.Substring(folder1.Length)).OrderBy(f => f).ToArray();
-
-        var files2 = Directory.GetFiles(folder2, "*", SearchOption.AllDirectories)
-            .Where(f => !f.EndsWith(".meta"))
-            .Select(f => f.Substring(folder2.Length)).OrderBy(f => f).ToArray();
-
-        if (files1.Length != files2.Length) {
-            return false;
-        }
-
-        for (int i = 0; i < files1.Length; i++)
+        // Check which tracked files need to be updated
+        List<string> filesToUpdate = new List<string>();
+        foreach (string fileName in trackedFiles)
         {
-            string path1 = folder1 + files1[i];
-            string path2 = folder2 + files2[i];
+            string sourceFile = Path.Combine(packagePath, fileName);
+            string destFile = Path.Combine(destinationPath, fileName);
 
-            if (!File.Exists(path2)) {
-                return false;
-            }
-            if (!File.ReadAllBytes(path1).SequenceEqual(File.ReadAllBytes(path2)))
+            if (!File.Exists(sourceFile))
             {
-                return false;
+                continue;
+            }
+
+            // If destination file doesn't exist or content differs, add to update list
+            if (!File.Exists(destFile) || !File.ReadAllBytes(sourceFile).SequenceEqual(File.ReadAllBytes(destFile)))
+            {
+                filesToUpdate.Add(fileName);
             }
         }
 
-        return true;
+        // Update only the files that changed
+        if (filesToUpdate.Count > 0)
+        {
+            foreach (string fileName in filesToUpdate)
+            {
+                string sourceFile = Path.Combine(packagePath, fileName);
+                string destFile = Path.Combine(destinationPath, fileName);
+
+                // Ensure destination directory exists
+                string destDir = Path.GetDirectoryName(destFile);
+                if (!Directory.Exists(destDir))
+                {
+                    Directory.CreateDirectory(destDir);
+                }
+
+                // Copy the file
+                File.Copy(sourceFile, destFile, true);
+            }
+
+            AssetDatabase.Refresh();
+            Debug.Log($"[Game Interface] WebGL template updated: {string.Join(", ", filesToUpdate)}");
+        }
     }
 }
 #endif

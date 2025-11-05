@@ -21,6 +21,7 @@ public class GameInterfaceExample : MonoBehaviour
     private bool starting = false;
     private bool inGame = false;
     private bool isPaused = false;
+    private IAPProduct[] products = new IAPProduct[0];
 
     public void Awake()
     {
@@ -37,8 +38,10 @@ public class GameInterfaceExample : MonoBehaviour
             Debug.Log("[GI Tester] Retrieved IAP Products:");
             foreach (var product in products)
             {
-                Debug.Log($"- SKU: {product.sku}, Title: {product.title}, Price: {product.displayPrice}");
+                Debug.Log($"- SKU: {product.sku}, Title: {product.title}, Price Value: {product.priceValue}");
             }
+
+            this.products = products;
         });
 
         Debug.Log("[GI Tester] Current language: " + GameInterface.Instance.GetCurrentLanguage());
@@ -210,7 +213,7 @@ public class GameInterfaceExample : MonoBehaviour
     {
         try
         {
-            var result = await GameInterface.Instance.ShowRewardedAd("test_event");
+            var result = await GameInterface.Instance.ShowRewardedAd("button:example:test");
             ToastManager.Instance.ShowToast("[GI Tester] ShowRewardedAd result: " + (result.isRewardGranted ? "Reward Granted" : "No Reward"));
 
         }
@@ -267,7 +270,7 @@ public class GameInterfaceExample : MonoBehaviour
         });
     }
 
-    public async void GameQuit()
+    public void GameQuit()
     {
         StartCoroutine(GameQuitCoroutine());
     }
@@ -310,10 +313,19 @@ public class GameInterfaceExample : MonoBehaviour
 
     public async void BuyProduct()
     {
-        try
+        try 
         {
-            var result = await GameInterface.Instance.BuyProduct("test_sku");
+            var randomProduct = products[UnityEngine.Random.Range(0, products.Length)];
+
+            if (products.Length == 0)
+            {
+                ToastManager.Instance.ShowToast("[GI Tester] No products available");
+                return;
+            }
+
+            var result = await GameInterface.Instance.BuyProduct(randomProduct.sku);
             ToastManager.Instance.ShowToast("[GI Tester] BuyProduct result:");
+            Debug.Log(result.detail);
             ToastManager.Instance.ShowToast("SKU: " + result.detail.sku);
         }
         catch (Exception ex)

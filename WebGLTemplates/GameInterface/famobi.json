@@ -8,5 +8,17 @@
     "eventIds": ["test_event"],
     "allowlist": ["*"],
     "blocklist": []
-  }
+  },
+  "iap": {
+    "products": [
+      {
+        "sku": "REMOVE_ADS",
+        "title": "Ad-Free Gaming",
+        "description": "Remove all interstitial and rewarded ads.",
+        "imageURI": "https://cdn.famobi.com/assets/images/no_ads_icon.png",
+        "priceValue": 2.99
+      }
+    ]
+  },
+  "schemaVersion": 1
 }

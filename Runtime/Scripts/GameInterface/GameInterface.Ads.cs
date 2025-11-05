@@ -164,22 +164,11 @@ public partial class GameInterface
             return;
         }
 
-        string path = Path.Combine(Application.dataPath, "WebGLTemplates/GameInterface/famobi.json");
-
-        if (!File.Exists(path))
+        GameInterfaceData data = FetchFamobiJson();
+        if (!data.interstitial.eventIds.Contains(eventId))
         {
-            Debug.LogError($"[GI] famobi.json not found");
-            return;
+            Debug.LogError($"[GI] Interstitial event {eventId} not found in famobi.json");
         }
-
-        string json = File.ReadAllText(path);
-        var data = JsonUtility.FromJson<GameInterfaceData>(json);
-        if (data.interstitial.eventIds.Contains(eventId))
-        {
-            return;
-        }
-
-        Debug.LogError($"[GI] Interstitial event {eventId} not found in famobi.json");
 #endif
     }
 }
@@ -196,13 +185,6 @@ public class OffsetResult
     public float right;
     public float top;
     public float bottom;
-}
-
-[Serializable]
-public class GameInterfaceData
-{
-    public InterstitialData interstitial;
-    public RewardedData rewarded;
 }
 
 [Serializable]
