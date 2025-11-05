@@ -1,6 +1,6 @@
 {
   "name": "com.famobi.game-interface",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "Game Interface",
   "description": "Plugin to easily integrate GameInterface API into Unity projects.\n\nIMPORTANT: Please read the README.md file before starting integration.\n\nCheck out Packages/Game Interface/Samples for a test scene, where features can be tested.\nNote: To open the sample scene, you must copy it to your Assets/ folder first (scenes in Packages folder cannot be opened directly).\nAlso check out the GameInterfaceExample.cs script to see example usage.\nFor more information about the API, visit https://famobi.atlassian.net/wiki/spaces/GI1/pages/1982332934/TL+DR",
   "unity": "2022.3",
