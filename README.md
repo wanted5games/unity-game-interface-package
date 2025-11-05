@@ -236,6 +236,8 @@ A sample scene is included to help you quickly test and understand the Game Inte
 - **Scene:** `Packages/Game Interface/Samples/Scenes/SampleScene.scene`
 - **Example Script:** `Packages/Game Interface/Samples/Scripts/GameInterfaceExample.cs`
 
+⚠️ **Important**: To open the sample scene, you must copy it to your `Assets/` folder first. Scenes located in the `Packages/` folder cannot be opened directly in Unity.
+
 These demonstrate how to use the Game Interface API and test event hooks during gameplay.
 
 ## Build

@@ -275,6 +275,11 @@ public partial class GameInterface
         string path = !string.IsNullOrEmpty(guid)
             ? AssetDatabase.GUIDToAssetPath(guid) : GameInterfaceTesterWindow.PREF_PATH;
         tester = AssetDatabase.LoadAssetAtPath<GameInterfaceTester>(path);
+
+        if (tester == null && path != GameInterfaceTesterWindow.PREF_PATH) {
+            path = GameInterfaceTesterWindow.PREF_PATH;
+            tester = AssetDatabase.LoadAssetAtPath<GameInterfaceTester>(path);
+        }
 #endif
 
 #if UNITY_WEBGL && !UNITY_EDITOR

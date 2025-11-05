@@ -2,6 +2,12 @@
 
 All notable changes to this package will be documented in this file.
 
+## [1.0.1] - 2025-11-05
+
+### Changed
+
+- **Documentation**: Added note about copying sample scene to Assets folder to open it (scenes in Packages folder cannot be opened directly).
+
 ## [1.0.0] - 2025-11-05
 
 ### Added
