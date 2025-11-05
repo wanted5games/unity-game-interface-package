@@ -208,21 +208,7 @@ public class GameInterfaceExample : MonoBehaviour
     {
         ToastManager.Instance.ShowToast("[GI Tester] Reward declined");
     }
-
-    public async void ShowRewardedAd()
-    {
-        try
-        {
-            var result = await GameInterface.Instance.ShowRewardedAd("button:example:test");
-            ToastManager.Instance.ShowToast("[GI Tester] ShowRewardedAd result: " + (result.isRewardGranted ? "Reward Granted" : "No Reward"));
-
-        }
-        catch (Exception ex)
-        {
-            ToastManager.Instance.ShowToast("[GI Tester] ShowRewardedAd failed: " + ex.Message);
-        }
-    }
-
+    
     public async void GameStart()
     {
         if (starting || inGame)
