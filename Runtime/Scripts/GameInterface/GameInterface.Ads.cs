@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 public partial class GameInterface
 {
+    private float lastInterstitialAdTime = -1f;
+
     /// <summary>
     /// Listen for rewarded ad availability changes to update relevant UI elements accordingly. This will also be executed every second, because the availability can change at any time. Make sure to use <c>IsRewardedAdAvailable(eventId)</c> to get the current status.
     /// </summary>
@@ -50,10 +52,42 @@ public partial class GameInterface
     /// <param name="eventId"></param>
     /// <param name="placementType"></param>
     /// <returns></returns>
-    public Task ShowInterstitialAd(string eventId, string placementType = "", Action onAdClosed = null, Action<string> onAdFailed = null)
+    public async Task ShowInterstitialAd(string eventId, string placementType = "", Action onAdClosed = null, Action<string> onAdFailed = null)
     {
         CheckIfInterstitialEventExists(eventId);
-        return ExecuteWebGLRequest(id => GameInterfaceBridge.ShowInterstitialAd(id, eventId, placementType), onAdClosed, onAdFailed);
+        
+        if (tester != null && tester.interstitialAdCooldown > 0 && lastInterstitialAdTime >= 0f)
+        {
+            float timeSinceLastAdMs = (Time.time - lastInterstitialAdTime) * 1000f;
+            if (timeSinceLastAdMs < tester.interstitialAdCooldown)
+            {
+                float remainingCooldownMs = tester.interstitialAdCooldown - timeSinceLastAdMs;
+                string errorMessage = $"Interstitial ad is on cooldown. Please wait {remainingCooldownMs:F0} more milliseconds.";
+                Debug.Log($"[GI] {errorMessage}");
+                onAdFailed?.Invoke(errorMessage);
+                return;
+            }
+        }
+        
+#if UNITY_WEBGL && !UNITY_EDITOR
+        await ExecuteWebGLRequest(id => GameInterfaceBridge.ShowInterstitialAd(id, eventId, placementType), onAdClosed, onAdFailed);
+        lastInterstitialAdTime = Time.time;
+#else
+        bool isPaused = IsPaused();
+        bool isMuted = IsMuted();
+        OnPauseStateChange?.Invoke(true);
+        OnMuteStateChange?.Invoke(true);
+
+        int delay = tester != null ? tester.showInterstitialAdDelay : 0;
+        await Task.Delay(delay);
+        
+        await AdOverlay.Instance.ShowInterstitialAd(eventId, onAdClosed, onAdFailed);
+        onAdClosed?.Invoke();
+        lastInterstitialAdTime = Time.time;
+
+        OnPauseStateChange?.Invoke(isPaused);
+        OnMuteStateChange?.Invoke(isMuted);
+#endif
     }
 
     /// <summary>
@@ -63,10 +97,29 @@ public partial class GameInterface
     /// <param name="onAdClosed"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public Task<RewardedAdResult> ShowRewardedAd(string eventId, Action<RewardedAdResult> onAdClosed = null, Action<string> onAdFailed = null)
+    public async Task<RewardedAdResult> ShowRewardedAd(string eventId, Action<RewardedAdResult> onAdClosed = null, Action<string> onAdFailed = null)
     {
         CheckIfRewardedEventExists(eventId);
-        return ExecuteWebGLRequest<RewardedAdResult>(id => GameInterfaceBridge.ShowRewardedAd(id, eventId), onAdClosed, onAdFailed);
+#if UNITY_WEBGL && !UNITY_EDITOR
+        return await ExecuteWebGLRequest<RewardedAdResult>(id => GameInterfaceBridge.ShowRewardedAd(id, eventId), onAdClosed, onAdFailed);
+#else
+        bool isPaused = IsPaused();
+        bool isMuted = IsMuted();
+        OnMuteStateChange?.Invoke(true);
+        OnPauseStateChange?.Invoke(true);
+
+        int delay = tester != null ? tester.showRewardedAdDelay : 0;
+        await Task.Delay(delay);
+        
+
+        var result = await AdOverlay.Instance.ShowRewardedAd(eventId, onAdClosed, onAdFailed);
+        onAdClosed?.Invoke(result);
+
+        OnMuteStateChange?.Invoke(isMuted);
+        OnPauseStateChange?.Invoke(isPaused);
+        
+        return result;
+#endif
     }
 
     /// <summary>
@@ -78,7 +131,8 @@ public partial class GameInterface
     public Task<bool> HasRewardedAd(string eventId, Action<bool> onResult = null, Action<string> onError = null)
     {
         CheckIfRewardedEventExists(eventId);
-        return ExecuteWebGLRequest<bool>(id => GameInterfaceBridge.HasRewardedAd(id, eventId), onResult, onError);
+        int delay = tester != null ? tester.hasRewardedAdDelay : 0;
+        return ExecuteWebGLRequest<bool>(id => GameInterfaceBridge.HasRewardedAd(id, eventId), onResult, onError, delay);
     }
 
     /// <summary>

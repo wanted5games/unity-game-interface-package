@@ -35,6 +35,27 @@ public partial class GameInterfaceTester : ScriptableObject
     [SerializeField] private OffsetResult _offsets;
     [SerializeField] private SupportedLanguage _language = SupportedLanguage.English;
 
+    // Delay settings for game events (in milliseconds)
+    [SerializeField] private int _gameStartDelay = 0;
+    [SerializeField] private int _gameCompleteDelay = 0;
+    [SerializeField] private int _gameOverDelay = 0;
+    [SerializeField] private int _gameQuitDelay = 0;
+    [SerializeField] private int _gamePauseDelay = 0;
+    [SerializeField] private int _gameResumeDelay = 0;
+    
+    // Delay settings for IAP events (in milliseconds)
+    [SerializeField] private int _getProductsDelay = 0;
+    [SerializeField] private int _buyProductDelay = 0;
+    [SerializeField] private int _consumeProductDelay = 0;
+    
+    // Delay settings for Ads events (in milliseconds)
+    [SerializeField] private int _hasRewardedAdDelay = 0;
+    [SerializeField] private int _showInterstitialAdDelay = 0;
+    [SerializeField] private int _showRewardedAdDelay = 0;
+    
+    // Cooldown settings for Ads (in milliseconds)
+    [SerializeField] private int _interstitialAdCooldown = 60 * 1000;
+
     // ---------------- Runtime Properties ----------------
     public bool rewardedAdAvailable { get => _rewardedAdAvailable; set => _rewardedAdAvailable = value; }
     public bool isRewardGranted { get => _isRewardGranted; set => _isRewardGranted = value; }
@@ -44,6 +65,19 @@ public partial class GameInterfaceTester : ScriptableObject
     public string logoUrl { get => _logoUrl; set => _logoUrl = value; }
     public OffsetResult offsets { get => _offsets; set => _offsets = value; }
     public SupportedLanguage language { get => _language; set => _language = value; }
+    public int gameStartDelay { get => _gameStartDelay; set => _gameStartDelay = value; }
+    public int gameCompleteDelay { get => _gameCompleteDelay; set => _gameCompleteDelay = value; }
+    public int gameOverDelay { get => _gameOverDelay; set => _gameOverDelay = value; }
+    public int gameQuitDelay { get => _gameQuitDelay; set => _gameQuitDelay = value; }
+    public int gamePauseDelay { get => _gamePauseDelay; set => _gamePauseDelay = value; }
+    public int gameResumeDelay { get => _gameResumeDelay; set => _gameResumeDelay = value; }
+    public int getProductsDelay { get => _getProductsDelay; set => _getProductsDelay = value; }
+    public int buyProductDelay { get => _buyProductDelay; set => _buyProductDelay = value; }
+    public int consumeProductDelay { get => _consumeProductDelay; set => _consumeProductDelay = value; }
+    public int hasRewardedAdDelay { get => _hasRewardedAdDelay; set => _hasRewardedAdDelay = value; }
+    public int showInterstitialAdDelay { get => _showInterstitialAdDelay; set => _showInterstitialAdDelay = value; }
+    public int showRewardedAdDelay { get => _showRewardedAdDelay; set => _showRewardedAdDelay = value; }
+    public int interstitialAdCooldown { get => _interstitialAdCooldown; set => _interstitialAdCooldown = value; }
 
     // Returns locale string for the selected language
     public string ToLocale()

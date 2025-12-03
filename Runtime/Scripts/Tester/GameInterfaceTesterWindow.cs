@@ -15,6 +15,7 @@ public class GameInterfaceTesterWindow : EditorWindow
     private SerializedObject serializedSettings;
     private Vector2 scrollPos;
     private bool featuresFoldout = true;
+    private bool delaysFoldout = true;
 
     private void OnEnable()
     {
@@ -111,6 +112,32 @@ public class GameInterfaceTesterWindow : EditorWindow
 
             SerializedProperty langProp = serializedSettings.FindProperty("_language");
             EditorGUILayout.PropertyField(langProp, new GUIContent("Language"));
+
+            // Delays foldout
+            delaysFoldout = EditorGUILayout.Foldout(delaysFoldout, "Event Delays (ms)", true);
+            if (delaysFoldout)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.LabelField("Game Events", EditorStyles.boldLabel);
+                EditorGUILayout.PropertyField(serializedSettings.FindProperty("_gameStartDelay"), new GUIContent("Game Start Delay"));
+                EditorGUILayout.PropertyField(serializedSettings.FindProperty("_gameCompleteDelay"), new GUIContent("Game Complete Delay"));
+                EditorGUILayout.PropertyField(serializedSettings.FindProperty("_gameOverDelay"), new GUIContent("Game Over Delay"));
+                EditorGUILayout.PropertyField(serializedSettings.FindProperty("_gameQuitDelay"), new GUIContent("Game Quit Delay"));
+                EditorGUILayout.PropertyField(serializedSettings.FindProperty("_gamePauseDelay"), new GUIContent("Game Pause Delay"));
+                EditorGUILayout.PropertyField(serializedSettings.FindProperty("_gameResumeDelay"), new GUIContent("Game Resume Delay"));
+                EditorGUILayout.Space();
+                EditorGUILayout.LabelField("IAP Events", EditorStyles.boldLabel);
+                EditorGUILayout.PropertyField(serializedSettings.FindProperty("_getProductsDelay"), new GUIContent("Get Products Delay"));
+                EditorGUILayout.PropertyField(serializedSettings.FindProperty("_buyProductDelay"), new GUIContent("Buy Product Delay"));
+                EditorGUILayout.PropertyField(serializedSettings.FindProperty("_consumeProductDelay"), new GUIContent("Consume Product Delay"));
+                EditorGUILayout.Space();
+                EditorGUILayout.LabelField("Ads Events", EditorStyles.boldLabel);
+                EditorGUILayout.PropertyField(serializedSettings.FindProperty("_hasRewardedAdDelay"), new GUIContent("Has Rewarded Ad Delay"));
+                EditorGUILayout.PropertyField(serializedSettings.FindProperty("_showInterstitialAdDelay"), new GUIContent("Show Interstitial Ad Delay"));
+                EditorGUILayout.PropertyField(serializedSettings.FindProperty("_showRewardedAdDelay"), new GUIContent("Show Rewarded Ad Delay"));
+                EditorGUILayout.PropertyField(serializedSettings.FindProperty("_interstitialAdCooldown"), new GUIContent("Interstitial Ad Cooldown (ms)"));
+                EditorGUI.indentLevel--;
+            }
 
             serializedSettings.ApplyModifiedProperties();
 

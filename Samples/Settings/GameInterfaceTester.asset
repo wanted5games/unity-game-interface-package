@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: GameInterfaceTester
   m_EditorClassIdentifier: 
   _rewardedAdAvailable: 1
+  _isRewardGranted: 1
   _isMuted: 0
   _isPaused: 0
   _targetLevel: 1
@@ -23,28 +24,28 @@ MonoBehaviour:
     top: 0
     bottom: 0
   _language: 0
-  features:
-  - name: audio
-    enabled: 1
-  - name: copyright
-    enabled: 1
-  - name: credits
-    enabled: 1
-  - name: iap
-    enabled: 1
-  - name: pause
-    enabled: 1
-  - name: privacy
-    enabled: 1
-  - name: progress
-    enabled: 1
-  - name: rewarded
-    enabled: 1
-  - name: score
-    enabled: 1
-  - name: tutorial
-    enabled: 1
-  - name: version
-    enabled: 1
-  - name: visibilitychange
-    enabled: 1
+  _gameStartDelay: 1000
+  _gameCompleteDelay: 0
+  _gameOverDelay: 0
+  _gameQuitDelay: 1000
+  _gamePauseDelay: 0
+  _gameResumeDelay: 0
+  _getProductsDelay: 0
+  _buyProductDelay: 1000
+  _consumeProductDelay: 0
+  _hasRewardedAdDelay: 0
+  _showInterstitialAdDelay: 0
+  _showRewardedAdDelay: 0
+  _interstitialAdCooldown: 0
+  audio: 1
+  copyright: 1
+  credits: 1
+  iap: 1
+  pause: 1
+  privacy: 1
+  progress: 1
+  rewarded: 1
+  score: 1
+  tutorial: 1
+  version: 1
+  visibilitychange: 1

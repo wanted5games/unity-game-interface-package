@@ -33,7 +33,7 @@ public class GameInterfaceExample : MonoBehaviour
 
     public void Start()
     {
-        GameInterface.Instance.GetIAPProducts((products) =>
+        GameInterface.Instance.GetProducts((products) =>
         {
             Debug.Log("[GI Tester] Retrieved IAP Products:");
             foreach (var product in products)
@@ -221,7 +221,6 @@ public class GameInterfaceExample : MonoBehaviour
         CheckGameButtonState();
 
         await GameInterface.Instance.ShowInterstitialAd("button:menu:start", "start");
-        ToastManager.Instance.ShowToast("[GI Tester] Interstitial Ad shown before GameStart");
         await GameInterface.Instance.GameStart(1);
         ToastManager.Instance.ShowToast("[GI Tester] GameStart callback executed for level 1");
 

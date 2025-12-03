@@ -2,6 +2,30 @@
 
 All notable changes to this package will be documented in this file.
 
+## [1.1.0] - 2025-01-XX
+
+### Added
+
+- **Event delays for testing**: Configurable delays (in milliseconds) for all async operations to simulate network latency during testing:
+  - Game events: GameStart, GameComplete, GameOver, GameQuit, GamePause, GameResume
+  - IAP events: GetProducts, BuyProduct, ConsumeProduct
+  - Ad events: HasRewardedAd, ShowInterstitialAd, ShowRewardedAd, InterstitialAdCooldown
+  - All delays are configurable in the Game Interface Tester window
+- **Ad overlay system**: Editor-only ad overlay for testing ads in Unity Editor:
+  - Interstitial ads display with a "Close Ad" button
+  - Rewarded ads display with "Grant Reward" and "Reject Reward" buttons for testing different scenarios
+- **Interstitial ad cooldown**: Configurable cooldown period (in milliseconds) between interstitial ad displays to prevent showing ads too frequently
+- **Automatic pause/mute on ad display**: When showing ads (interstitial or rewarded) in the Unity Editor, the game automatically:
+  - Pauses the game and mutes audio when the ad is shown
+  - Restores the original pause and mute state when the ad is closed
+  - This is handled via `OnPauseStateChange` and `OnMuteStateChange` events
+- **IAP error callbacks**: Added `onError` parameter to all IAP methods (`GetProducts`, `BuyProduct`, `ConsumeProduct`) for proper error handling
+- **IAP feature checks**: All IAP methods now check if the IAP feature is available before executing
+
+### Changed
+
+- **Method rename**: `GetIAPProducts()` renamed to `GetProducts()` for consistency
+
 ## [1.0.2] - 2025-11-05
 
 ### Fixed

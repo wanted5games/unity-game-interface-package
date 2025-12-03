@@ -178,7 +178,7 @@ The `famobi.json` file is required for your game and must be located in the WebG
 ⚠️ **Important**:
 
 - All eventIds used in your game must be listed in this file. See the [TL;DR documentation](https://famobi.atlassian.net/wiki/spaces/GI1/pages/1982332934/TL+DR) (ADS-008) for details.
-- IAP products defined in `famobi.json` are automatically loaded and merged with API results when calling `GetIAPProducts()`. Products are shuffled for each call.
+- IAP products defined in `famobi.json` are automatically loaded and merged with API results when calling `GetProducts()`. Products are shuffled for each call.
 
 ### Additional Features
 
@@ -227,7 +227,18 @@ The settings asset used by this window is located at: `Packages/Game Interface/S
 If you prefer to keep this asset inside your Assets/ folder, you can create a new one via:
 
 ![MenuItem](Documentation/MenuItem.png)
-⚠️ Important: Don’t forget to assign your new asset to the Game Interface Tester window.
+⚠️ Important: Don't forget to assign your new asset to the Game Interface Tester window.
+
+### Testing Features
+
+The Game Interface Tester window provides several testing features:
+
+- **Event Delays**: Configure delays (in milliseconds) for game events (GameStart, GameComplete, etc.), IAP events, and ad events to simulate network latency
+- **Interstitial Ad Cooldown**: Set a cooldown period (in milliseconds) between interstitial ad displays
+- **Ad Overlay**: In the Unity Editor, ads are displayed as overlays with interactive buttons:
+  - Interstitial ads show a "Close Ad" button
+  - Rewarded ads show "Grant Reward" and "Reject Reward" buttons for testing different reward scenarios
+- **Runtime State**: Adjust various runtime states like muted/paused status, rewarded ad availability, and more
 
 ## Samples
 

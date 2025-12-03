@@ -418,7 +418,7 @@ var GameInterface = {
     }
   },
 
-  GetIAPProducts: function (taskId) {
+  GetProducts: function (taskId) {
     window.GameInterface.iap
       .getProducts()
       .then((products) => {

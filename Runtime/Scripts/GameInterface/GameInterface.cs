@@ -135,7 +135,7 @@ public partial class GameInterface
             pending.SetException(ex);
         }
     }
-    private async Task<T> ExecuteWebGLRequest<T>(Action<int> webglAction, Action<T> onComplete = null, Action<string> onError = null)
+    private async Task<T> ExecuteWebGLRequest<T>(Action<int> webglAction, Action<T> onComplete = null, Action<string> onError = null, int delay = 0)
     {
         T result;
 
@@ -152,7 +152,7 @@ public partial class GameInterface
             throw;
         }
 #else
-        await Task.Delay(100);
+        await Task.Delay(delay);
 
         // If T is bool, set 90% chance true
         if (typeof(T) == typeof(bool))
@@ -193,7 +193,7 @@ public partial class GameInterface
         return result;
     }
 
-    private async Task ExecuteWebGLRequest(Action<int> webglAction, Action onComplete = null, Action<string> onError = null)
+    private async Task ExecuteWebGLRequest(Action<int> webglAction, Action onComplete = null, Action<string> onError = null, int delay = 0)
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
          var taskId = GetNextRequestId();
@@ -208,7 +208,7 @@ public partial class GameInterface
              throw;
          }
 #else
-        await Task.Delay(100);
+        await Task.Delay(delay);
 #endif
         onComplete?.Invoke();
     }

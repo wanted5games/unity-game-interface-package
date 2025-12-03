@@ -139,7 +139,7 @@ public static class GameInterfaceBridge
     public static extern float GetValue(string key);
 
     [DllImport("__Internal")]
-    public static extern float GetIAPProducts(int taskId);
+    public static extern float GetProducts(int taskId);
 
     [DllImport("__Internal")]
     public static extern float BuyIAPProduct(int taskId, string sku);

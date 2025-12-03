@@ -80,7 +80,8 @@ public partial class GameInterface
     /// <returns></returns>
     public Task GameStart(int? level = null, Action onComplete = null, Action<string> onError = null)
     {
-        return ExecuteWebGLRequest(id => GameInterfaceBridge.GameStart(id, level ?? -999), onComplete, onError);
+        int delay = tester != null ? tester.gameStartDelay : 0;
+        return ExecuteWebGLRequest(id => GameInterfaceBridge.GameStart(id, level ?? -999), onComplete, onError, delay);
     }
 
     /// <summary>
@@ -92,7 +93,8 @@ public partial class GameInterface
     /// <exception cref="Exception"></exception>
     public Task GameComplete(Action onComplete = null, Action<string> onError = null)
     {
-        return ExecuteWebGLRequest(id => GameInterfaceBridge.GameComplete(id), onComplete, onError);
+        int delay = tester != null ? tester.gameCompleteDelay : 0;
+        return ExecuteWebGLRequest(id => GameInterfaceBridge.GameComplete(id), onComplete, onError, delay);
     }
 
     /// <summary>
@@ -105,7 +107,8 @@ public partial class GameInterface
     /// <exception cref="Exception"></exception>
     public Task GameOver(Action onComplete = null, Action<string> onError = null)
     {
-        return ExecuteWebGLRequest(id => GameInterfaceBridge.GameOver(id), onComplete, onError);
+        int delay = tester != null ? tester.gameOverDelay : 0;
+        return ExecuteWebGLRequest(id => GameInterfaceBridge.GameOver(id), onComplete, onError, delay);
     }
 
     /// <summary>
@@ -117,7 +120,8 @@ public partial class GameInterface
     /// <exception cref="Exception"></exception>
     public Task GameQuit(Action onComplete = null, Action<string> onError = null)
     {
-        return ExecuteWebGLRequest(id => GameInterfaceBridge.GameQuit(id), onComplete, onError);
+        int delay = tester != null ? tester.gameQuitDelay : 0;
+        return ExecuteWebGLRequest(id => GameInterfaceBridge.GameQuit(id), onComplete, onError, delay);
     }
 
     /// <summary>
@@ -128,7 +132,8 @@ public partial class GameInterface
     /// <exception cref="Exception"></exception>
     public Task GamePause(Action onComplete = null, Action<string> onError = null)
     {
-        return ExecuteWebGLRequest(id => GameInterfaceBridge.GamePause(id), onComplete, onError);
+        int delay = tester != null ? tester.gamePauseDelay : 0;
+        return ExecuteWebGLRequest(id => GameInterfaceBridge.GamePause(id), onComplete, onError, delay);
     }
 
     /// <summary>
@@ -139,6 +144,7 @@ public partial class GameInterface
     /// <exception cref="Exception"></exception>
     public Task GameResume(Action onComplete = null, Action<string> onError = null)
     {
-        return ExecuteWebGLRequest(id => GameInterfaceBridge.GameResume(id), onComplete, onError);
+        int delay = tester != null ? tester.gameResumeDelay : 0;
+        return ExecuteWebGLRequest(id => GameInterfaceBridge.GameResume(id), onComplete, onError, delay);
     }
 }
