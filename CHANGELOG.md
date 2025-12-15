@@ -2,7 +2,21 @@
 
 All notable changes to this package will be documented in this file.
 
-## [1.1.0] - 2025-01-XX
+## [1.0.4] - 2025-12-15
+
+### Changed
+
+- **WebGL Template structure**: Separated CSS and splash screen into external files for better maintainability:
+  - CSS styles moved to `styles.css`
+  - Splash screen HTML moved to `splash.html`
+  - `index.html` now references these external files
+- **WebGL Template Installer**: Enhanced to automatically detect and copy missing files from the package template to the destination:
+  - Now checks all files in the source directory recursively
+  - Automatically copies any files that exist in source but are missing in destination
+  - Works alongside the existing tracked files system for comprehensive template synchronization
+- **Updated reference to the docs**: Changed the url of the documentation to https://docs.famobi.com.
+
+## [1.0.3] - 2025-12-03
 
 ### Added
 

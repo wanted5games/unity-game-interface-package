@@ -30,9 +30,9 @@ This package simplifies integration by exposing a single entry point — the `Ga
 
 ## Before you start
 
-Before implementing anything, read the official Game Interface documentation (TL;DR) end‑to‑end. It defines the contract your game must follow:
+Before implementing anything, read the official Game Interface documentation end‑to‑end. It defines the contract your game must follow:
 
-• TL;DR: https://famobi.atlassian.net/wiki/spaces/GI1/pages/1982332934/TL+DR
+• http://docs.famobi.com/
 
 Key areas to pay attention to (you will likely need all of these):
 
@@ -42,7 +42,7 @@ Key areas to pay attention to (you will likely need all of these):
 - ADS: button/break triggers, rewarded availability, banner offsets, eventIds in famobi.json
 - STORAGE/TRACKING: replace storage, GA events
 
-If something in this README differs from the TL;DR, the TL;DR wins.
+If something in this README differs from the documentation, the documentation wins.
 
 ## Installation
 
@@ -58,7 +58,7 @@ https://github.com/wanted5games/unity-game-interface-package.git
 
 ## Usage
 
-All API calls are accessible via the `GameInterface` singleton instance. This singleton mirrors the JavaScript API described in the [TL;DR documentation](https://famobi.atlassian.net/wiki/spaces/GI1/pages/1982332934/TL+DR) as closely as possible.
+All API calls are accessible via the `GameInterface` singleton instance. This singleton mirrors the JavaScript API described in the [documentation](http://docs.famobi.com/) as closely as possible.
 
 ```C#
 GameInterface.Instance.GameReady();
@@ -177,7 +177,7 @@ The `famobi.json` file is required for your game and must be located in the WebG
 
 ⚠️ **Important**:
 
-- All eventIds used in your game must be listed in this file. See the [TL;DR documentation](https://famobi.atlassian.net/wiki/spaces/GI1/pages/1982332934/TL+DR) (ADS-008) for details.
+- All eventIds used in your game must be listed in this file. See the [documentation](https://docs.famobi.com/ads) for details.
 - IAP products defined in `famobi.json` are automatically loaded and merged with API results when calling `GetProducts()`. Products are shuffled for each call.
 
 ### Additional Features

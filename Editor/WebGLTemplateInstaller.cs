@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
+using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
@@ -13,7 +14,8 @@ public static class WebGLTemplateInstaller
     // List of files that should trigger a copy when changed
     private static readonly string[] trackedFiles = new string[]
     {
-        "thumbnail.png"
+        "thumbnail.png",
+        "index.html"
     };
 
     static WebGLTemplateInstaller()
@@ -73,19 +75,28 @@ public static class WebGLTemplateInstaller
             }
         }
 
-        // Update only the files that changed
+        // Check for missing files (files that exist in source but not in destination)
+        List<string> missingFiles = GetMissingFiles(packagePath, destinationPath);
+        filesToUpdate.AddRange(missingFiles);
+
+        // Update only the files that changed or are missing
         if (filesToUpdate.Count > 0)
         {
-            foreach (string fileName in filesToUpdate)
+            foreach (string relativePath in filesToUpdate)
             {
                 // Skip .meta files
-                if (fileName.EndsWith(".meta", System.StringComparison.OrdinalIgnoreCase))
+                if (relativePath.EndsWith(".meta", System.StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
 
-                string sourceFile = Path.Combine(packagePath, fileName);
-                string destFile = Path.Combine(destinationPath, fileName);
+                string sourceFile = Path.Combine(packagePath, relativePath);
+                string destFile = Path.Combine(destinationPath, relativePath);
+
+                if (!File.Exists(sourceFile))
+                {
+                    continue;
+                }
 
                 // Ensure destination directory exists
                 string destDir = Path.GetDirectoryName(destFile);
@@ -101,6 +112,66 @@ public static class WebGLTemplateInstaller
             AssetDatabase.Refresh();
             Debug.Log($"[Game Interface] WebGL template updated: {string.Join(", ", filesToUpdate)}");
         }
+    }
+
+    private static List<string> GetMissingFiles(string sourceDir, string destDir)
+    {
+        List<string> missingFiles = new List<string>();
+        GetMissingFilesRecursive(sourceDir, destDir, sourceDir, missingFiles);
+        return missingFiles;
+    }
+
+    private static void GetMissingFilesRecursive(string sourceDir, string destDir, string baseSourceDir, List<string> missingFiles)
+    {
+        // Check all files in the source directory
+        foreach (string sourceFile in Directory.GetFiles(sourceDir))
+        {
+            string fileName = Path.GetFileName(sourceFile);
+            
+            // Skip .meta files
+            if (fileName.EndsWith(".meta", System.StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            // Get relative path from base source directory
+            string relativePath = GetRelativePath(baseSourceDir, sourceFile);
+            string destFile = Path.Combine(destDir, relativePath);
+
+            // If file doesn't exist in destination, add to missing files list
+            if (!File.Exists(destFile))
+            {
+                missingFiles.Add(relativePath);
+            }
+        }
+
+        // Recursively check subdirectories
+        foreach (string subDir in Directory.GetDirectories(sourceDir))
+        {
+            string relativeSubDir = GetRelativePath(baseSourceDir, subDir);
+            string destSubDir = Path.Combine(destDir, relativeSubDir);
+            GetMissingFilesRecursive(subDir, destSubDir, baseSourceDir, missingFiles);
+        }
+    }
+
+    private static string GetRelativePath(string basePath, string targetPath)
+    {
+        // Convert to absolute paths for Uri to work correctly
+        string baseAbsolute = Path.GetFullPath(basePath);
+        string targetAbsolute = Path.GetFullPath(targetPath);
+        
+        // Ensure base path ends with directory separator
+        if (!baseAbsolute.EndsWith(Path.DirectorySeparatorChar.ToString()) && !baseAbsolute.EndsWith(Path.AltDirectorySeparatorChar.ToString()))
+        {
+            baseAbsolute += Path.DirectorySeparatorChar;
+        }
+        
+        // Use Uri to calculate relative path (compatible with older .NET versions)
+        Uri baseUri = new Uri(baseAbsolute);
+        Uri targetUri = new Uri(targetAbsolute);
+        Uri relativeUri = baseUri.MakeRelativeUri(targetUri);
+        string relativePath = Uri.UnescapeDataString(relativeUri.ToString()).Replace('/', Path.DirectorySeparatorChar);
+        return relativePath;
     }
 
     private static void CopyDirectoryExcludingMeta(string sourceDir, string destDir)
