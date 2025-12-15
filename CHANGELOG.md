@@ -2,6 +2,12 @@
 
 All notable changes to this package will be documented in this file.
 
+## [1.0.5] - 2025-12-15
+
+### Changed
+
+- **Emphasized reading the official documentation**
+
 ## [1.0.4] - 2025-12-15
 
 ### Changed

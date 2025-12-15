@@ -23,26 +23,30 @@
 
 ## Introduction
 
-**Game Interface Package** provides a bridge between Unity’s C# environment and JavaScript APIs.  
+**Game Interface Package** provides a bridge between Unity's C# environment and JavaScript APIs.  
 It allows your Unity games to seamlessly communicate with the GameInterface web layer.
 
 This package simplifies integration by exposing a single entry point — the `GameInterface` singleton.
 
+⚠️ **IMPORTANT: Before you start implementing, you must read the official Game Interface documentation at [https://docs.famobi.com/](https://docs.famobi.com/). This documentation defines the contract your game must follow and contains critical information about integration requirements.**
+
 ## Before you start
 
-Before implementing anything, read the official Game Interface documentation end‑to‑end. It defines the contract your game must follow:
+**🔴 CRITICAL: Read the official Game Interface documentation first!**
 
-• http://docs.famobi.com/
+Before implementing anything, you **must** read the official Game Interface documentation end‑to‑end. It defines the contract your game must follow:
 
-Key areas to pay attention to (you will likely need all of these):
+**📚 Documentation: [https://docs.famobi.com/](https://docs.famobi.com/)**
 
-- START: init timing, preload progress, gameReady
-- GAME: gameStart/gameComplete/gameOver/gameQuit sequencing
-- AUDIO/PAUSE: master mute/pause handling and feature flags
-- ADS: button/break triggers, rewarded availability, banner offsets, eventIds in famobi.json
-- STORAGE/TRACKING: replace storage, GA events
+**Key areas covered in the documentation** (you will likely need all of these):
 
-If something in this README differs from the documentation, the documentation wins.
+- **START**: init timing, preload progress, gameReady
+- **GAME**: gameStart/gameComplete/gameOver/gameQuit sequencing
+- **AUDIO/PAUSE**: master mute/pause handling and feature flags
+- **ADS**: button/break triggers, rewarded availability, banner offsets, eventIds in famobi.json
+- **STORAGE/TRACKING**: replace storage, GA events
+
+⚠️ **If something in this README differs from the documentation, the documentation at [https://docs.famobi.com/](https://docs.famobi.com/) always takes precedence.**
 
 ## Installation
 
@@ -58,7 +62,9 @@ https://github.com/wanted5games/unity-game-interface-package.git
 
 ## Usage
 
-All API calls are accessible via the `GameInterface` singleton instance. This singleton mirrors the JavaScript API described in the [documentation](http://docs.famobi.com/) as closely as possible.
+All API calls are accessible via the `GameInterface` singleton instance. This singleton mirrors the JavaScript API described in the [documentation](https://docs.famobi.com/) as closely as possible.
+
+💡 **Tip**: Refer to the [documentation](https://docs.famobi.com/) for detailed API specifications, best practices, and integration requirements.
 
 ```C#
 GameInterface.Instance.GameReady();
