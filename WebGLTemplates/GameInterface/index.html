@@ -11,7 +11,7 @@
     <script src="https://api.games.famobi.com/init.js"></script> 
 
     <script>
-        window.GameInterface.init(["Build/Build.loader.js"], { "features": {"rewarded": true, "copyright": true, "credits": false, "visibilitychange": true }}).then(() => {
+        window.GameInterface.init(["Build/{{{ LOADER_FILENAME }}}"], { "features": {"rewarded": true, "copyright": true, "credits": false, "visibilitychange": true }}).then(() => {
             document.body.style.textAlign = "left";
 
             var canvas = document.querySelector("#unity-canvas");

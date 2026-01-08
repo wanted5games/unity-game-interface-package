@@ -2,6 +2,11 @@
 
 All notable changes to this package will be documented in this file.
 
+## [1.0.6] - 2026-01-08
+
+### Fixed
+- Fixed a bug, where the loader.js file name is hardcoded in the index.html.
+
 ## [1.0.5] - 2025-12-15
 
 ### Changed
