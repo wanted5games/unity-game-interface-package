@@ -423,7 +423,15 @@ var GameInterface = {
       .getProducts()
       .then((products) => {
         console.log(products);
-        SendMessage("GameInterface", "ResolveRequest", JSON.stringify({ taskId, success: true, result: products }));
+        SendMessage(
+          "GameInterface",
+          "ResolveRequest",
+          JSON.stringify({
+            taskId,
+            success: true,
+            result: JSON.stringify({ items: products }),
+          })
+        );
       })
       .catch((e) => {
         var err = (e && (e.message || String(e))) || "getProducts rejected";
@@ -436,7 +444,15 @@ var GameInterface = {
       .buyProduct(UTF8ToString(sku))
       .then((purchase) => {
         console.log(purchase);
-        SendMessage("GameInterface", "ResolveRequest", JSON.stringify({ taskId, success: true, result: purchase }));
+        SendMessage(
+          "GameInterface",
+          "ResolveRequest",
+          JSON.stringify({
+            taskId,
+            success: true,
+            result: JSON.stringify(purchase),
+          })
+        );
       })
       .catch((e) => {
         var err = (e && (e.message || String(e))) || "buyProduct rejected";
@@ -450,7 +466,15 @@ var GameInterface = {
       .consumeProduct(UTF8ToString(purchase))
       .then((result) => {
         console.log(result);
-        SendMessage("GameInterface", "ResolveRequest", JSON.stringify({ taskId, success: true, result }));
+        SendMessage(
+          "GameInterface",
+          "ResolveRequest",
+          JSON.stringify({
+            taskId,
+            success: true,
+            result: JSON.stringify(result),
+          })
+        );
       })
       .catch((e) => {
         var err = (e && (e.message || String(e))) || "consumeProduct rejected";
@@ -461,7 +485,7 @@ var GameInterface = {
   OnIAPEvent: function () {
     window.GameInterface.iap.onEvent(function (event) {
       console.log(event);
-      SendMessage("GameInterface", "ResolveAction", JSON.stringify({ type: "OnIAPEvent", iapEvent: event }));
+      SendMessage("GameInterface", "ResolveAction", JSON.stringify({ type: "OnIAPEvent", iapEvent: JSON.stringify(event) }));
     });
   },
 };

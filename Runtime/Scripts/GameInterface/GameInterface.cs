@@ -38,9 +38,9 @@ public partial class GameInterface
             var go = new GameObject("GameInterface");
             go.AddComponent<GameInterfaceGameObject>();
         }
-            
+
         return _instance;
-    }   
+    }
 
     private GameInterfaceTester tester;
 
@@ -168,7 +168,7 @@ public partial class GameInterface
             };
             result = (T)(object)rewarded;
 
-            if (tester) 
+            if (tester)
             {
                 tester.rewardedAdAvailable = false;
                 InvokeOnRewardedAdAvailabilityChange(null, tester.rewardedAdAvailable);
@@ -255,10 +255,22 @@ public partial class GameInterface
                 OnOffsetChange?.Invoke(offset);
                 break;
             case "OnIAPEvent":
-                var iapEvent = new IAPEvent
+                IAPEvent iapEvent = null;
+                if (!string.IsNullOrEmpty(data.iapEvent))
                 {
-                    type = data.type
-                };
+                    try
+                    {
+                        iapEvent = JsonUtility.FromJson<IAPEvent>(data.iapEvent);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError($"[GI] Failed to deserialize IAPEvent: {ex.Message}");
+                    }
+                }
+                if (iapEvent == null)
+                {
+                    iapEvent = new IAPEvent { type = data.type };
+                }
                 OnIAPEvent?.Invoke(iapEvent);
                 break;
             case "OnVisibilityChange": OnVisibilityChange?.Invoke(data.hidden); break;
@@ -334,6 +346,7 @@ public class JsonActionData
     public float left;
     public float right;
     public bool hidden;
+    public string iapEvent;
 }
 
 interface IPendingRequest

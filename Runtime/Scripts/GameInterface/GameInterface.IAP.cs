@@ -28,13 +28,16 @@ public partial class GameInterface
         }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
-        return await ExecuteWebGLRequest<IAPProduct[]>(id => GameInterfaceBridge.GetProducts(id), onComplete, onError);
+        var wrapper = await ExecuteWebGLRequest<IAPProductWrapper>(id => GameInterfaceBridge.GetProducts(id), null, onError);
+        var products = wrapper?.items ?? new IAPProduct[0];
+        onComplete?.Invoke(products);
+        return products;
 #else
         try
         {
             int delay = tester != null ? tester.getProductsDelay : 0;
             await Task.Delay(delay);
-            
+
             GameInterfaceData data = FetchFamobiJson();
             IAPProduct[] products = data.iap.products.ToArray();
 
@@ -79,7 +82,7 @@ public partial class GameInterface
             await Task.Delay(delay);
 
             PurchaseResult result = new PurchaseResult { detail = new PurchaseDetail { sku = sku, purchase = "test_purchase" } };
-         
+
             OnIAPEvent?.Invoke(new IAPEvent { type = "PURCHASE_SUCCESS_EVENT", detail = result.detail });
             onComplete?.Invoke(result);
             return result;
@@ -128,6 +131,12 @@ public class IAPProduct
 public class IAPProductList
 {
     public IAPProduct[] products = new IAPProduct[0];
+}
+
+[Serializable]
+public class IAPProductWrapper
+{
+    public IAPProduct[] items;
 }
 
 [Serializable]
